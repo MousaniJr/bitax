@@ -1,6 +1,6 @@
 {
   "name": "bitax-spain-gibraltar",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Aplicación web para gestionar impuestos entre España y Gibraltar",
   "private": true,
   "scripts": {
@@ -8,7 +8,11 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "postinstall": "prisma generate",
+    "prisma:studio": "prisma studio",
+    "prisma:push": "prisma db push",
+    "prisma:migrate": "prisma migrate dev"
   },
   "dependencies": {
     "next": "^14.2.0",
@@ -23,10 +27,26 @@
     "postcss": "^8.4.0",
     "lucide-react": "^0.378.0",
     "clsx": "^2.1.0",
-    "zod": "^3.23.0"
+    "zod": "^3.23.0",
+    "@prisma/client": "^5.14.0",
+    "next-auth": "^4.24.0",
+    "bcryptjs": "^2.4.3",
+    "@next-auth/prisma-adapter": "^1.0.7",
+    "stripe": "^15.8.0",
+    "@stripe/stripe-js": "^3.5.0",
+    "react-hook-form": "^7.51.0",
+    "@hookform/resolvers": "^3.3.0",
+    "jspdf": "^2.5.1",
+    "html2canvas": "^1.4.1",
+    "date-fns": "^3.6.0",
+    "nodemailer": "^6.9.0",
+    "react-hot-toast": "^2.4.1"
   },
   "devDependencies": {
     "eslint": "^8.57.0",
-    "eslint-config-next": "^14.2.0"
+    "eslint-config-next": "^14.2.0",
+    "prisma": "^5.14.0",
+    "@types/bcryptjs": "^2.4.6",
+    "@types/nodemailer": "^6.4.0"
   }
 }

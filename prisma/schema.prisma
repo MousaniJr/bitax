@@ -1,0 +1,222 @@
+// Esquema de base de datos para BiTax
+// Compatible con PostgreSQL (Neon, Supabase, etc.)
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================
+// MODELOS PARA NEXTAUTH
+// ============================================
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// ============================================
+// MODELO DE USUARIO
+// ============================================
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  password      String? // Para usuarios con email/password
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Datos del usuario
+  phone         String?
+  locale        String    @default("es")
+  timezone      String    @default("Europe/Madrid")
+
+  // Relaciones NextAuth
+  accounts      Account[]
+  sessions      Session[]
+
+  // Relaciones de la app
+  subscription  Subscription?
+  declarations  TaxDeclaration[]
+  preferences   UserPreferences?
+
+  @@index([email])
+}
+
+// ============================================
+// MODELO DE SUSCRIPCIÓN
+// ============================================
+
+enum SubscriptionStatus {
+  ACTIVE
+  CANCELED
+  PAST_DUE
+  UNPAID
+  TRIALING
+}
+
+model Subscription {
+  id                 String             @id @default(cuid())
+  userId             String             @unique
+  user               User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Datos de Stripe
+  stripeCustomerId   String?            @unique
+  stripeSubscriptionId String?          @unique
+  stripePriceId      String?
+  stripeCurrentPeriodEnd DateTime?
+
+  // Estado de la suscripción
+  status             SubscriptionStatus @default(ACTIVE)
+  plan               String             @default("premium") // "free" o "premium"
+
+  // Fechas
+  startDate          DateTime           @default(now())
+  endDate            DateTime?
+  canceledAt         DateTime?
+
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+
+  @@index([userId])
+  @@index([stripeCustomerId])
+  @@index([stripeSubscriptionId])
+}
+
+// ============================================
+// MODELO DE PREFERENCIAS DE USUARIO
+// ============================================
+
+model UserPreferences {
+  id     String @id @default(cuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Preferencias de notificaciones
+  emailNotifications      Boolean @default(true)
+  taxReminders            Boolean @default(true)
+  newsletterSubscription  Boolean @default(false)
+
+  // Preferencias de declaración
+  defaultCountry          String  @default("spain") // "spain" o "gibraltar"
+  defaultAutonomousCommunity String? // Para España
+  defaultCurrency         String  @default("EUR")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+}
+
+// ============================================
+// MODELO DE DECLARACIÓN FISCAL
+// ============================================
+
+enum DeclarationType {
+  GIBRALTAR
+  SPAIN
+  BOTH
+}
+
+model TaxDeclaration {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Información básica
+  year            Int
+  type            DeclarationType
+  status          String          @default("draft") // draft, completed, filed
+
+  // Datos de Gibraltar (JSON)
+  gibraltarData   Json?
+  gibraltarResult Json?
+
+  // Datos de España (JSON)
+  spainData       Json?
+  spainResult     Json?
+
+  // Metadatos
+  notes           String?         @db.Text
+  attachments     String[]        // URLs de documentos adjuntos
+
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  completedAt     DateTime?
+
+  @@unique([userId, year, type])
+  @@index([userId])
+  @@index([year])
+  @@index([userId, year])
+}
+
+// ============================================
+// MODELO DE RECORDATORIOS
+// ============================================
+
+enum ReminderType {
+  GIBRALTAR_DEADLINE
+  SPAIN_DEADLINE
+  CUSTOM
+}
+
+model Reminder {
+  id          String       @id @default(cuid())
+  userId      String
+
+  type        ReminderType
+  title       String
+  description String?      @db.Text
+  dueDate     DateTime
+
+  // Estado
+  sent        Boolean      @default(false)
+  completed   Boolean      @default(false)
+
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  @@index([userId])
+  @@index([dueDate])
+  @@index([userId, dueDate])
+}
