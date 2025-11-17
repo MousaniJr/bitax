@@ -322,7 +322,7 @@ export default function SpainGuide() {
               <div className="bg-green-50 p-4 rounded-lg">
                 <h4 className="font-bold mb-2">Planes de pensiones</h4>
                 <p className="text-sm text-gray-700">
-                  Reducen la base imponible hasta 1.500€/año (o 8.500€ si >50 años).
+                  Reducen la base imponible hasta 1.500€/año (o 8.500€ si &gt;50 años).
                 </p>
               </div>
             </div>
