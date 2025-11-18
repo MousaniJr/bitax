@@ -5,11 +5,11 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "prisma generate && prisma db push && next build",
     "start": "next start",
     "lint": "next lint",
     "type-check": "tsc --noEmit",
-    "postinstall": "echo 'Skipping prisma generate for now'",
+    "postinstall": "prisma generate || true",
     "prisma:studio": "prisma studio",
     "prisma:push": "prisma db push",
     "prisma:migrate": "prisma migrate dev"
