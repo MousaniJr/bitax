@@ -3,9 +3,13 @@
 import { useState } from 'react'
 import { SpainData, SpainResult } from '@/types'
 import { calculateSpainTax } from '@/lib/spainCalculations'
-import { Calculator, FileText, AlertCircle } from 'lucide-react'
+import { Calculator, FileText, AlertCircle, MapPin } from 'lucide-react'
+
+type IncomeSource = 'gibraltar' | 'spain' | 'both'
 
 export default function SpainCalculator() {
+  const [incomeSource, setIncomeSource] = useState<IncomeSource | null>(null)
+
   const [data, setData] = useState<SpainData>({
     incomeSpain: 0,
     incomeGibraltar: 0,
@@ -32,12 +36,23 @@ export default function SpainCalculator() {
     setResult(calculatedResult)
 
     // Guardar en localStorage
+    localStorage.setItem('spain-income-source', incomeSource || '')
     localStorage.setItem('spain-data', JSON.stringify(data))
     localStorage.setItem('spain-result', JSON.stringify(calculatedResult))
   }
 
   const handleInputChange = (field: keyof SpainData, value: any) => {
     setData((prev) => ({ ...prev, [field]: value }))
+  }
+
+  const handleIncomeSourceChange = (source: IncomeSource) => {
+    setIncomeSource(source)
+    // Reset income fields based on source
+    if (source === 'gibraltar') {
+      setData((prev) => ({ ...prev, incomeSpain: 0 }))
+    } else if (source === 'spain') {
+      setData((prev) => ({ ...prev, incomeGibraltar: 0 }))
+    }
   }
 
   return (
@@ -50,283 +65,232 @@ export default function SpainCalculator() {
           <h2 className="text-3xl font-bold text-gray-900">Calculadora España (IRPF)</h2>
         </div>
 
-        <p className="text-gray-600 mb-4">
-          Calcula tu declaración de la renta en España considerando tus ingresos en Gibraltar y el convenio de doble imposición.
+        <p className="text-gray-600 mb-6">
+          Calcula tu declaración de la renta en España. Versión simplificada para cálculo rápido.
         </p>
 
-        {/* Aviso importante */}
-        <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6">
-          <div className="flex">
-            <AlertCircle className="h-5 w-5 text-yellow-400 flex-shrink-0 mt-0.5" />
-            <div className="ml-3">
-              <p className="text-sm text-yellow-700">
-                Este cálculo aplica el convenio de doble imposición España-Gibraltar. Los impuestos pagados en Gibraltar
-                se pueden descontar de tu declaración española.
-              </p>
+        {/* Selector de origen de ingresos */}
+        {!incomeSource && (
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              ¿De dónde has obtenido tus ingresos en el año fiscal?
+            </h3>
+
+            <div className="grid md:grid-cols-3 gap-4">
+              {/* Solo Gibraltar */}
+              <button
+                onClick={() => handleIncomeSourceChange('gibraltar')}
+                className="p-6 border-2 border-gray-300 rounded-xl hover:border-red-500 hover:bg-red-50 transition-all text-left group"
+              >
+                <div className="flex items-center space-x-3 mb-3">
+                  <div className="bg-red-100 p-2 rounded-lg group-hover:bg-red-200">
+                    <MapPin className="h-6 w-6 text-red-600" />
+                  </div>
+                  <h4 className="font-bold text-gray-900">Solo Gibraltar</h4>
+                </div>
+                <p className="text-sm text-gray-600">
+                  He trabajado únicamente en Gibraltar
+                </p>
+              </button>
+
+              {/* Solo España */}
+              <button
+                onClick={() => handleIncomeSourceChange('spain')}
+                className="p-6 border-2 border-gray-300 rounded-xl hover:border-blue-500 hover:bg-blue-50 transition-all text-left group"
+              >
+                <div className="flex items-center space-x-3 mb-3">
+                  <div className="bg-blue-100 p-2 rounded-lg group-hover:bg-blue-200">
+                    <MapPin className="h-6 w-6 text-blue-600" />
+                  </div>
+                  <h4 className="font-bold text-gray-900">Solo España</h4>
+                </div>
+                <p className="text-sm text-gray-600">
+                  He trabajado únicamente en España
+                </p>
+              </button>
+
+              {/* Ambos */}
+              <button
+                onClick={() => handleIncomeSourceChange('both')}
+                className="p-6 border-2 border-gray-300 rounded-xl hover:border-purple-500 hover:bg-purple-50 transition-all text-left group"
+              >
+                <div className="flex items-center space-x-3 mb-3">
+                  <div className="bg-purple-100 p-2 rounded-lg group-hover:bg-purple-200">
+                    <MapPin className="h-6 w-6 text-purple-600" />
+                  </div>
+                  <h4 className="font-bold text-gray-900">Ambos Países</h4>
+                </div>
+                <p className="text-sm text-gray-600">
+                  He trabajado en Gibraltar y España
+                </p>
+              </button>
             </div>
           </div>
-        </div>
+        )}
 
-        {/* Formulario */}
-        <div className="space-y-6">
-          {/* Ingresos en España */}
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Ingresos anuales en España (€)
-            </label>
-            <input
-              type="number"
-              value={data.incomeSpain || ''}
-              onChange={(e) => handleInputChange('incomeSpain', parseFloat(e.target.value) || 0)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="Ej: 20000"
-            />
-          </div>
-
-          {/* Ingresos en Gibraltar */}
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Ingresos anuales en Gibraltar (€)
-            </label>
-            <input
-              type="number"
-              value={data.incomeGibraltar || ''}
-              onChange={(e) => handleInputChange('incomeGibraltar', parseFloat(e.target.value) || 0)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="Ej: 35000"
-            />
-            <p className="text-xs text-gray-500 mt-1">
-              Convertir libras a euros al tipo de cambio medio anual
-            </p>
-          </div>
-
-          {/* Cotizaciones Seguridad Social */}
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Cotizaciones a la Seguridad Social (€)
-            </label>
-            <input
-              type="number"
-              value={data.socialSecurityContributions || ''}
-              onChange={(e) => handleInputChange('socialSecurityContributions', parseFloat(e.target.value) || 0)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="Ej: 3000"
-            />
-          </div>
-
-          {/* Retenciones */}
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Retenciones practicadas (€)
-            </label>
-            <input
-              type="number"
-              value={data.retentions || ''}
-              onChange={(e) => handleInputChange('retentions', parseFloat(e.target.value) || 0)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="Ej: 5000"
-            />
-            <p className="text-xs text-gray-500 mt-1">
-              IRPF retenido en tus nóminas españolas
-            </p>
-          </div>
-
-          {/* Estado civil */}
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Estado Civil
-            </label>
-            <select
-              value={data.maritalStatus}
-              onChange={(e) => handleInputChange('maritalStatus', e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            >
-              <option value="single">Soltero/a</option>
-              <option value="married">Casado/a</option>
-              <option value="divorced">Divorciado/a</option>
-              <option value="widowed">Viudo/a</option>
-            </select>
-          </div>
-
-          {/* Hijos */}
-          <div>
-            <label className="flex items-center space-x-2 mb-3">
-              <input
-                type="checkbox"
-                checked={data.hasChildren}
-                onChange={(e) => {
-                  handleInputChange('hasChildren', e.target.checked)
-                  if (!e.target.checked) {
-                    handleInputChange('numberOfChildren', 0)
-                    handleInputChange('childrenUnder3', 0)
-                  }
+        {/* Formulario según origen */}
+        {incomeSource && (
+          <div className="space-y-6">
+            {/* Botón para cambiar selección */}
+            <div className="bg-gray-50 p-4 rounded-lg flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <MapPin className={`h-5 w-5 ${
+                  incomeSource === 'gibraltar' ? 'text-red-600' :
+                  incomeSource === 'spain' ? 'text-blue-600' :
+                  'text-purple-600'
+                }`} />
+                <span className="font-semibold text-gray-900">
+                  {incomeSource === 'gibraltar' && 'Ingresos solo de Gibraltar'}
+                  {incomeSource === 'spain' && 'Ingresos solo de España'}
+                  {incomeSource === 'both' && 'Ingresos de ambos países'}
+                </span>
+              </div>
+              <button
+                onClick={() => {
+                  setIncomeSource(null)
+                  setResult(null)
                 }}
-                className="w-5 h-5 text-blue-600 rounded focus:ring-blue-500"
-              />
-              <span className="text-sm font-semibold text-gray-700">Tengo hijos</span>
-            </label>
+                className="text-sm text-blue-600 hover:text-blue-800 font-semibold"
+              >
+                Cambiar
+              </button>
+            </div>
 
-            {data.hasChildren && (
-              <div className="space-y-3">
-                <div>
-                  <label className="block text-sm font-medium text-gray-600 mb-2">
-                    Número total de hijos
-                  </label>
-                  <input
-                    type="number"
-                    value={data.numberOfChildren || ''}
-                    onChange={(e) => handleInputChange('numberOfChildren', parseInt(e.target.value) || 0)}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="Ej: 2"
-                    min="0"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-600 mb-2">
-                    Hijos menores de 3 años
-                  </label>
-                  <input
-                    type="number"
-                    value={data.childrenUnder3 || ''}
-                    onChange={(e) => handleInputChange('childrenUnder3', parseInt(e.target.value) || 0)}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="Ej: 1"
-                    min="0"
-                  />
+            {/* Aviso según origen */}
+            {(incomeSource === 'gibraltar' || incomeSource === 'both') && (
+              <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4">
+                <div className="flex">
+                  <AlertCircle className="h-5 w-5 text-yellow-400 flex-shrink-0 mt-0.5" />
+                  <div className="ml-3">
+                    <p className="text-sm text-yellow-700">
+                      <strong>Convenio de doble imposición:</strong> Los impuestos pagados en Gibraltar
+                      se descuentan de tu declaración española para evitar doble tributación.
+                    </p>
+                  </div>
                 </div>
               </div>
             )}
-          </div>
 
-          {/* Comunidad Autónoma */}
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Comunidad Autónoma de residencia
-            </label>
-            <select
-              value={data.autonomousCommunity}
-              onChange={(e) => handleInputChange('autonomousCommunity', e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            >
-              <option value="andalucia">Andalucía</option>
-              <option value="aragon">Aragón</option>
-              <option value="asturias">Asturias</option>
-              <option value="baleares">Baleares</option>
-              <option value="canarias">Canarias</option>
-              <option value="cantabria">Cantabria</option>
-              <option value="castilla-leon">Castilla y León</option>
-              <option value="castilla-mancha">Castilla-La Mancha</option>
-              <option value="cataluna">Cataluña</option>
-              <option value="valencia">Comunidad Valenciana</option>
-              <option value="extremadura">Extremadura</option>
-              <option value="galicia">Galicia</option>
-              <option value="madrid">Madrid</option>
-              <option value="murcia">Murcia</option>
-              <option value="navarra">Navarra</option>
-              <option value="pais-vasco">País Vasco</option>
-              <option value="rioja">La Rioja</option>
-            </select>
-          </div>
-
-          {/* Hipoteca */}
-          <div>
-            <label className="flex items-center space-x-2 mb-3">
-              <input
-                type="checkbox"
-                checked={data.hasMortgage}
-                onChange={(e) => {
-                  handleInputChange('hasMortgage', e.target.checked)
-                  if (!e.target.checked) {
-                    handleInputChange('mortgageAmount', 0)
-                    handleInputChange('isPrimaryResidence', false)
-                  }
-                }}
-                className="w-5 h-5 text-blue-600 rounded focus:ring-blue-500"
-              />
-              <span className="text-sm font-semibold text-gray-700">Tengo hipoteca de vivienda habitual</span>
-            </label>
-
-            {data.hasMortgage && (
-              <div className="space-y-3">
+            {/* Campos según origen */}
+            <div className="space-y-6">
+              {/* Ingresos de España */}
+              {(incomeSource === 'spain' || incomeSource === 'both') && (
                 <div>
-                  <label className="block text-sm font-medium text-gray-600 mb-2">
-                    Cantidad pagada por hipoteca en el año (€)
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Ingresos anuales en España (€) *
                   </label>
                   <input
                     type="number"
-                    value={data.mortgageAmount || ''}
-                    onChange={(e) => handleInputChange('mortgageAmount', parseFloat(e.target.value) || 0)}
+                    value={data.incomeSpain || ''}
+                    onChange={(e) => handleInputChange('incomeSpain', parseFloat(e.target.value) || 0)}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="Ej: 6000"
+                    placeholder="Ej: 25000"
                   />
                 </div>
+              )}
+
+              {/* Ingresos de Gibraltar */}
+              {(incomeSource === 'gibraltar' || incomeSource === 'both') && (
                 <div>
-                  <label className="block text-sm font-medium text-gray-600 mb-2">
-                    Año de compra de la vivienda
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Ingresos anuales en Gibraltar (€) *
                   </label>
                   <input
                     type="number"
-                    value={data.purchaseYear || ''}
-                    onChange={(e) => handleInputChange('purchaseYear', parseInt(e.target.value) || new Date().getFullYear())}
+                    value={data.incomeGibraltar || ''}
+                    onChange={(e) => handleInputChange('incomeGibraltar', parseFloat(e.target.value) || 0)}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="Ej: 2010"
+                    placeholder="Ej: 35000"
                   />
                   <p className="text-xs text-gray-500 mt-1">
-                    Solo deducible si se compró antes de 2013
+                    Convertir libras a euros al tipo de cambio medio anual
                   </p>
                 </div>
-                <label className="flex items-center space-x-2">
-                  <input
-                    type="checkbox"
-                    checked={data.isPrimaryResidence}
-                    onChange={(e) => handleInputChange('isPrimaryResidence', e.target.checked)}
-                    className="w-5 h-5 text-blue-600 rounded focus:ring-blue-500"
-                  />
-                  <span className="text-sm text-gray-700">Es mi vivienda habitual</span>
+              )}
+
+              {/* Comunidad Autónoma */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Comunidad Autónoma de residencia *
                 </label>
+                <select
+                  value={data.autonomousCommunity}
+                  onChange={(e) => handleInputChange('autonomousCommunity', e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  <option value="andalucia">Andalucía</option>
+                  <option value="aragon">Aragón</option>
+                  <option value="asturias">Asturias</option>
+                  <option value="baleares">Baleares</option>
+                  <option value="canarias">Canarias</option>
+                  <option value="cantabria">Cantabria</option>
+                  <option value="castilla-leon">Castilla y León</option>
+                  <option value="castilla-mancha">Castilla-La Mancha</option>
+                  <option value="cataluna">Cataluña</option>
+                  <option value="valencia">Comunidad Valenciana</option>
+                  <option value="extremadura">Extremadura</option>
+                  <option value="galicia">Galicia</option>
+                  <option value="madrid">Madrid</option>
+                  <option value="murcia">Murcia</option>
+                  <option value="navarra">Navarra</option>
+                  <option value="pais-vasco">País Vasco</option>
+                  <option value="rioja">La Rioja</option>
+                </select>
               </div>
-            )}
-          </div>
 
-          {/* Maternidad/Paternidad */}
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Deducción por maternidad/paternidad (€)
-            </label>
-            <input
-              type="number"
-              value={data.maternityPaternity || ''}
-              onChange={(e) => handleInputChange('maternityPaternity', parseFloat(e.target.value) || 0)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="Ej: 1200"
-            />
-            <p className="text-xs text-gray-500 mt-1">
-              Hasta 1.200€ por hijo menor de 3 años
-            </p>
-          </div>
+              {/* Cotizaciones SS (solo si tiene ingresos en España) */}
+              {(incomeSource === 'spain' || incomeSource === 'both') && (
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Cotizaciones a la Seguridad Social (€)
+                  </label>
+                  <input
+                    type="number"
+                    value={data.socialSecurityContributions || ''}
+                    onChange={(e) => handleInputChange('socialSecurityContributions', parseFloat(e.target.value) || 0)}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="Ej: 3000"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    Cotizaciones deducibles de tu base imponible
+                  </p>
+                </div>
+              )}
 
-          {/* Deducciones autonómicas */}
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Deducciones autonómicas adicionales (€)
-            </label>
-            <input
-              type="number"
-              value={data.regionalDeductions || ''}
-              onChange={(e) => handleInputChange('regionalDeductions', parseFloat(e.target.value) || 0)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="Ej: 500"
-            />
-          </div>
+              {/* Retenciones (solo si tiene ingresos en España) */}
+              {(incomeSource === 'spain' || incomeSource === 'both') && (
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Retenciones practicadas (€)
+                  </label>
+                  <input
+                    type="number"
+                    value={data.retentions || ''}
+                    onChange={(e) => handleInputChange('retentions', parseFloat(e.target.value) || 0)}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="Ej: 5000"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    IRPF retenido en tus nóminas españolas
+                  </p>
+                </div>
+              )}
+            </div>
 
-          {/* Botón calcular */}
-          <button
-            onClick={handleCalculate}
-            className="w-full bg-blue-600 text-white py-4 rounded-lg hover:bg-blue-700 transition-colors font-semibold text-lg shadow-md hover:shadow-lg"
-          >
-            Calcular Declaración IRPF
-          </button>
-        </div>
+            {/* Botón calcular */}
+            <button
+              onClick={handleCalculate}
+              disabled={
+                (incomeSource === 'spain' && data.incomeSpain === 0) ||
+                (incomeSource === 'gibraltar' && data.incomeGibraltar === 0) ||
+                (incomeSource === 'both' && (data.incomeSpain === 0 || data.incomeGibraltar === 0))
+              }
+              className="w-full bg-blue-600 text-white py-4 rounded-lg hover:bg-blue-700 transition-colors font-semibold text-lg shadow-md hover:shadow-lg disabled:bg-gray-400 disabled:cursor-not-allowed"
+            >
+              Calcular Declaración IRPF
+            </button>
+          </div>
+        )}
 
         {/* Resultados */}
         {result && (
