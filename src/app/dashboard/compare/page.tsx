@@ -62,7 +62,7 @@ export default function ComparePage() {
   const declaration1 = year1 ? getDeclarationForYear(year1) : null
   const declaration2 = year2 ? getDeclarationForYear(year2) : null
 
-  const extractMetrics = (declaration: Declaration | null) => {
+  const extractMetrics = (declaration: Declaration | null | undefined) => {
     if (!declaration) return null
 
     const gibraltar = declaration.gibraltarResult || {}
