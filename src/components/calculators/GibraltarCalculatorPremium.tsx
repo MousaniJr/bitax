@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { GibraltarData, GibraltarResult, GibraltarAllowances } from '@/types'
+import { GibraltarData, GibraltarDataPremium, GibraltarResult, GibraltarAllowances } from '@/types'
 import { calculateGibraltarTax, PERSONAL_ALLOWANCE } from '@/lib/gibraltarCalculations'
 import { allowanceToTaxCode } from '@/lib/taxCodeUtils'
 import { Calculator, TrendingDown, TrendingUp, Info, Crown, Check, Save } from 'lucide-react'
@@ -24,7 +24,7 @@ const ALLOWANCE_VALUES = {
 }
 
 interface Props {
-  onSave?: (data: GibraltarData, result: GibraltarResult) => void
+  onSave?: (data: GibraltarDataPremium, result: GibraltarResult) => void
   isPremium?: boolean
 }
 
@@ -116,10 +116,20 @@ export default function GibraltarCalculatorPremium({ onSave, isPremium = true }:
 
     setIsSaving(true)
     try {
-      const data: GibraltarData = {
+      const data: GibraltarDataPremium = {
         annualIncome,
         totalAllowances,
         taxCode: taxCode || undefined,
+        maritalStatus: allowances.spouseAllowance ? 'married' : 'single',
+        gender: 'male', // Default, could be added as input
+        age: allowances.isSeniorCitizen ? 65 : 30, // Inferred from senior status
+        allowances,
+        gibsDeductions: {
+          mortgageInterest: 0,
+          homePurchase: allowances.homePurchaseAllowance ? 7500 : 0,
+          pensionContributions: Math.min(allowances.pensionContributions, 1500),
+          medicalInsurance: Math.min(allowances.medicalInsurance, 3000),
+        },
       }
       await onSave(data, result)
     } finally {
