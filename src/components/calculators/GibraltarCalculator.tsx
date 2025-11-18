@@ -293,107 +293,136 @@ export default function GibraltarCalculator() {
                 <div className="mt-6 bg-white border-2 border-gray-300 rounded-xl p-6">
                   <h4 className="text-xl font-bold text-gray-900 mb-6">Comparación Detallada de Impuestos</h4>
 
-                  {/* Tabla ABS */}
-                  <div className="mb-8">
-                    <div className="flex items-center justify-between mb-4">
-                      <h5 className="text-lg font-bold text-gray-800">
-                        ABS (Allowance Based System)
-                      </h5>
-                      {result.system === 'ABS' && (
-                        <span className="bg-green-600 text-white px-3 py-1 rounded-full text-sm font-semibold">
-                          RECOMENDADO
-                        </span>
-                      )}
-                    </div>
-
-                    {/* Allowances Info */}
-                    <div className="bg-gray-50 p-4 rounded-lg mb-4">
-                      <div className="grid grid-cols-2 gap-4 text-sm">
-                        <div>
-                          <span className="text-gray-600">Ingresos Brutos:</span>
-                          <span className="font-semibold ml-2">£{data.annualIncome.toLocaleString()}</span>
-                        </div>
-                        <div>
-                          <span className="text-gray-600">Total Allowances:</span>
-                          <span className="font-semibold ml-2">£{result.absCalculation?.totalAllowances?.toLocaleString()}</span>
-                        </div>
-                        <div className="col-span-2">
-                          <span className="text-gray-600">Base Imponible:</span>
-                          <span className="font-semibold ml-2">
-                            £{(data.annualIncome - (result.absCalculation?.totalAllowances || 0)).toLocaleString()}
+                  {/* Tablas lado a lado */}
+                  <div className="grid lg:grid-cols-2 gap-6 mb-8">
+                    {/* Tabla ABS */}
+                    <div>
+                      <div className="flex items-center justify-between mb-4">
+                        <h5 className="text-lg font-bold text-gray-800">
+                          ABS (Allowance Based)
+                        </h5>
+                        {result.system === 'ABS' && (
+                          <span className="bg-green-600 text-white px-3 py-1 rounded-full text-xs font-semibold">
+                            RECOMENDADO
                           </span>
+                        )}
+                      </div>
+
+                      {/* Allowances Info */}
+                      <div className="bg-gray-50 p-3 rounded-lg mb-4 text-xs">
+                        <div className="space-y-1">
+                          <div className="flex justify-between">
+                            <span className="text-gray-600">Ingresos Brutos:</span>
+                            <span className="font-semibold">£{data.annualIncome.toLocaleString()}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-600">Total Allowances:</span>
+                            <span className="font-semibold">£{result.absCalculation?.totalAllowances?.toLocaleString()}</span>
+                          </div>
+                          <div className="flex justify-between border-t pt-1">
+                            <span className="text-gray-600">Base Imponible:</span>
+                            <span className="font-semibold">
+                              £{(data.annualIncome - (result.absCalculation?.totalAllowances || 0)).toLocaleString()}
+                            </span>
+                          </div>
                         </div>
+                      </div>
+
+                      {/* Tabla de tramos ABS */}
+                      <div className="overflow-x-auto">
+                        <table className="w-full text-xs">
+                          <thead>
+                            <tr className="bg-gray-100 border-b-2 border-gray-300">
+                              <th className="text-left py-2 px-2 font-semibold">Tramo</th>
+                              <th className="text-right py-2 px-2 font-semibold">Tasa</th>
+                              <th className="text-right py-2 px-2 font-semibold">Cantidad</th>
+                              <th className="text-right py-2 px-2 font-semibold">Impuesto</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {result.absCalculation?.breakdown?.map((bracket, idx) => (
+                              <tr key={idx} className="border-b border-gray-200 hover:bg-gray-50">
+                                <td className="py-2 px-2">{bracket.range}</td>
+                                <td className="text-right py-2 px-2">{(bracket.rate * 100).toFixed(0)}%</td>
+                                <td className="text-right py-2 px-2">£{bracket.taxableAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                                <td className="text-right py-2 px-2 font-semibold">£{bracket.taxOnBracket.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                              </tr>
+                            ))}
+                            <tr className="border-t-2 border-gray-300 bg-gray-50">
+                              <td className="py-2 px-2 font-semibold" colSpan={3}>Subtotal</td>
+                              <td className="text-right py-2 px-2 font-semibold">£{result.absCalculation?.taxBeforeCredit?.toLocaleString()}</td>
+                            </tr>
+                            <tr className="border-b border-gray-200">
+                              <td className="py-2 px-2 text-green-700" colSpan={3}>
+                                Tax Credit (max: £300 o 2%)
+                              </td>
+                              <td className="text-right py-2 px-2 text-green-700 font-semibold">
+                                -£{result.absCalculation?.taxCredit?.toLocaleString()}
+                              </td>
+                            </tr>
+                            <tr className="bg-green-50 border-t-2 border-green-500 font-bold">
+                              <td className="py-2 px-2" colSpan={3}>TOTAL ABS</td>
+                              <td className="text-right py-2 px-2">£{result.absCalculation?.taxAmount.toLocaleString()}</td>
+                            </tr>
+                          </tbody>
+                        </table>
                       </div>
                     </div>
 
-                    {/* Tabla de tramos ABS */}
-                    <div className="overflow-x-auto">
-                      <table className="w-full text-sm">
-                        <thead>
-                          <tr className="bg-gray-100 border-b-2 border-gray-300">
-                            <th className="text-left py-3 px-4 font-semibold">Tramo</th>
-                            <th className="text-right py-3 px-4 font-semibold">Tasa</th>
-                            <th className="text-right py-3 px-4 font-semibold">Cantidad</th>
-                            <th className="text-right py-3 px-4 font-semibold">Impuesto</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {result.absCalculation?.breakdown?.map((bracket, idx) => (
-                            <tr key={idx} className="border-b border-gray-200 hover:bg-gray-50">
-                              <td className="py-3 px-4">{bracket.range}</td>
-                              <td className="text-right py-3 px-4">{(bracket.rate * 100).toFixed(0)}%</td>
-                              <td className="text-right py-3 px-4">£{bracket.taxableAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
-                              <td className="text-right py-3 px-4 font-semibold">£{bracket.taxOnBracket.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
-                            </tr>
-                          ))}
-                          <tr className="bg-green-50 border-t-2 border-green-500 font-bold">
-                            <td className="py-3 px-4" colSpan={3}>TOTAL ABS</td>
-                            <td className="text-right py-3 px-4">£{result.absCalculation?.taxAmount.toLocaleString()}</td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
+                    {/* Tabla GIBS */}
+                    <div>
+                      <div className="flex items-center justify-between mb-4">
+                        <h5 className="text-lg font-bold text-gray-800">
+                          GIBS (Gross Income Based)
+                        </h5>
+                        {result.system === 'GIBS' && (
+                          <span className="bg-blue-600 text-white px-3 py-1 rounded-full text-xs font-semibold">
+                            RECOMENDADO
+                          </span>
+                        )}
+                      </div>
 
-                  {/* Tabla GIBS */}
-                  <div className="mb-8">
-                    <div className="flex items-center justify-between mb-4">
-                      <h5 className="text-lg font-bold text-gray-800">
-                        GIBS (Gross Income Based System)
-                      </h5>
-                      {result.system === 'GIBS' && (
-                        <span className="bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-semibold">
-                          RECOMENDADO
-                        </span>
-                      )}
-                    </div>
+                      {/* Info GIBS */}
+                      <div className="bg-gray-50 p-3 rounded-lg mb-4 text-xs">
+                        <div className="space-y-1">
+                          <div className="flex justify-between">
+                            <span className="text-gray-600">Ingresos Brutos:</span>
+                            <span className="font-semibold">£{data.annualIncome.toLocaleString()}</span>
+                          </div>
+                          <div className="flex justify-between border-t pt-1">
+                            <span className="text-gray-600">Base Imponible:</span>
+                            <span className="font-semibold">£{data.annualIncome.toLocaleString()}</span>
+                          </div>
+                        </div>
+                      </div>
 
-                    {/* Tabla de tramos GIBS */}
-                    <div className="overflow-x-auto">
-                      <table className="w-full text-sm">
-                        <thead>
-                          <tr className="bg-gray-100 border-b-2 border-gray-300">
-                            <th className="text-left py-3 px-4 font-semibold">Tramo</th>
-                            <th className="text-right py-3 px-4 font-semibold">Tasa</th>
-                            <th className="text-right py-3 px-4 font-semibold">Cantidad</th>
-                            <th className="text-right py-3 px-4 font-semibold">Impuesto</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {result.gibsCalculation?.breakdown?.map((bracket, idx) => (
-                            <tr key={idx} className="border-b border-gray-200 hover:bg-gray-50">
-                              <td className="py-3 px-4">{bracket.range}</td>
-                              <td className="text-right py-3 px-4">{(bracket.rate * 100).toFixed(0)}%</td>
-                              <td className="text-right py-3 px-4">£{bracket.taxableAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
-                              <td className="text-right py-3 px-4 font-semibold">£{bracket.taxOnBracket.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                      {/* Tabla de tramos GIBS */}
+                      <div className="overflow-x-auto">
+                        <table className="w-full text-xs">
+                          <thead>
+                            <tr className="bg-gray-100 border-b-2 border-gray-300">
+                              <th className="text-left py-2 px-2 font-semibold">Tramo</th>
+                              <th className="text-right py-2 px-2 font-semibold">Tasa</th>
+                              <th className="text-right py-2 px-2 font-semibold">Cantidad</th>
+                              <th className="text-right py-2 px-2 font-semibold">Impuesto</th>
                             </tr>
-                          ))}
-                          <tr className="bg-blue-50 border-t-2 border-blue-500 font-bold">
-                            <td className="py-3 px-4" colSpan={3}>TOTAL GIBS</td>
-                            <td className="text-right py-3 px-4">£{result.gibsCalculation?.taxAmount.toLocaleString()}</td>
-                          </tr>
-                        </tbody>
-                      </table>
+                          </thead>
+                          <tbody>
+                            {result.gibsCalculation?.breakdown?.map((bracket, idx) => (
+                              <tr key={idx} className="border-b border-gray-200 hover:bg-gray-50">
+                                <td className="py-2 px-2">{bracket.range}</td>
+                                <td className="text-right py-2 px-2">{(bracket.rate * 100).toFixed(0)}%</td>
+                                <td className="text-right py-2 px-2">£{bracket.taxableAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                                <td className="text-right py-2 px-2 font-semibold">£{bracket.taxOnBracket.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                              </tr>
+                            ))}
+                            <tr className="bg-blue-50 border-t-2 border-blue-500 font-bold">
+                              <td className="py-2 px-2" colSpan={3}>TOTAL GIBS</td>
+                              <td className="text-right py-2 px-2">£{result.gibsCalculation?.taxAmount.toLocaleString()}</td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
                     </div>
                   </div>
 

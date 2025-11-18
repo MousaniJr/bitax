@@ -35,6 +35,8 @@ export interface GibraltarResult {
     effectiveRate: number
     breakdown?: TaxBracket[] // Detailed bracket breakdown
     totalAllowances?: number // For display purposes
+    taxCredit?: number // Tax credit applied (max of £300 or 2%)
+    taxBeforeCredit?: number // Tax before applying credit
   }
   gibsCalculation?: {
     taxAmount: number

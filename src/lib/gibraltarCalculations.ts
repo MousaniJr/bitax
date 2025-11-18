@@ -22,6 +22,8 @@ export function calculateABS(data: GibraltarData): {
   effectiveRate: number
   breakdown: TaxBracket[]
   totalAllowances: number
+  taxCredit: number
+  taxBeforeCredit: number
 } {
   const { annualIncome, totalAllowances } = data
 
@@ -68,13 +70,21 @@ export function calculateABS(data: GibraltarData): {
     previousLimit = bracket.limit
   }
 
-  const effectiveRate = annualIncome > 0 ? (tax / annualIncome) * 100 : 0
+  // Tax Credit: mayor entre £300 o 2% del impuesto calculado
+  // Fuente: Tax Facts 2023/2024 (vigente para años siguientes)
+  const taxBeforeCredit = tax
+  const taxCredit = Math.max(300, tax * 0.02)
+  const taxAfterCredit = Math.max(0, tax - taxCredit)
+
+  const effectiveRate = annualIncome > 0 ? (taxAfterCredit / annualIncome) * 100 : 0
 
   return {
-    taxAmount: Math.round(tax * 100) / 100,
+    taxAmount: Math.round(taxAfterCredit * 100) / 100,
     effectiveRate: Math.round(effectiveRate * 100) / 100,
     breakdown,
     totalAllowances,
+    taxCredit: Math.round(taxCredit * 100) / 100,
+    taxBeforeCredit: Math.round(taxBeforeCredit * 100) / 100,
   }
 }
 
