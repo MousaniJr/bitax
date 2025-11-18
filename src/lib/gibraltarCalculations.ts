@@ -1,4 +1,4 @@
-import { GibraltarData, GibraltarResult } from '@/types'
+import { GibraltarData, GibraltarResult, TaxBracket } from '@/types'
 
 /**
  * Minimum Allowance garantizado por Gibraltar (2025/26)
@@ -17,7 +17,12 @@ export const PERSONAL_ALLOWANCE = 4343
  * - Gibraltar Income Tax Office 2025/26
  * - Fuente: https://www.gibraltar.gov.gi/income-tax-office
  */
-export function calculateABS(data: GibraltarData): { taxAmount: number; effectiveRate: number } {
+export function calculateABS(data: GibraltarData): {
+  taxAmount: number
+  effectiveRate: number
+  breakdown: TaxBracket[]
+  totalAllowances: number
+} {
   const { annualIncome, totalAllowances } = data
 
   // El totalAllowances ya incluye todo (personal + spouse + children + mortgage + otros)
@@ -31,10 +36,11 @@ export function calculateABS(data: GibraltarData): { taxAmount: number; effectiv
   // - Siguientes £12,000 al 17%
   // - Resto al 39%
   let tax = 0
+  const breakdown: TaxBracket[] = []
   const brackets = [
-    { limit: 4000, rate: 0.14 },     // Primeros £4,000 al 14%
-    { limit: 16000, rate: 0.17 },    // £4,001 - £16,000 al 17%
-    { limit: Infinity, rate: 0.39 }, // Más de £16,000 al 39%
+    { limit: 4000, rate: 0.14, range: 'First £4,000' },
+    { limit: 16000, rate: 0.17, range: '£4,001 - £16,000' },
+    { limit: Infinity, rate: 0.39, range: 'Over £16,000' },
   ]
 
   let remaining = taxableIncome
@@ -45,7 +51,16 @@ export function calculateABS(data: GibraltarData): { taxAmount: number; effectiv
     const taxableInBracket = Math.min(remaining, bracketSize)
 
     if (taxableInBracket > 0) {
-      tax += taxableInBracket * bracket.rate
+      const taxOnBracket = taxableInBracket * bracket.rate
+      tax += taxOnBracket
+
+      breakdown.push({
+        range: bracket.range,
+        rate: bracket.rate,
+        taxableAmount: taxableInBracket,
+        taxOnBracket: taxOnBracket,
+      })
+
       remaining -= taxableInBracket
     }
 
@@ -58,6 +73,8 @@ export function calculateABS(data: GibraltarData): { taxAmount: number; effectiv
   return {
     taxAmount: Math.round(tax * 100) / 100,
     effectiveRate: Math.round(effectiveRate * 100) / 100,
+    breakdown,
+    totalAllowances,
   }
 }
 
@@ -70,10 +87,15 @@ export function calculateABS(data: GibraltarData): { taxAmount: number; effectiv
  * - Fuente: https://www.gibraltar.gov.gi/income-tax-office
  * - GIBS tiene dos estructuras según nivel de ingresos
  */
-export function calculateGIBS(data: GibraltarData): { taxAmount: number; effectiveRate: number } {
+export function calculateGIBS(data: GibraltarData): {
+  taxAmount: number
+  effectiveRate: number
+  breakdown: TaxBracket[]
+} {
   const { annualIncome } = data
 
   let tax = 0
+  const breakdown: TaxBracket[] = []
 
   // GIBS tiene dos estructuras de tasas según el nivel de ingresos
 
@@ -84,9 +106,9 @@ export function calculateGIBS(data: GibraltarData): { taxAmount: number; effecti
     // - Resto @ 28%
 
     const brackets = [
-      { limit: 10000, rate: 0.06 },    // Primeros £10,000 al 6%
-      { limit: 17000, rate: 0.20 },    // £10,001 - £17,000 al 20%
-      { limit: Infinity, rate: 0.28 }, // Más de £17,000 al 28%
+      { limit: 10000, rate: 0.06, range: 'First £10,000' },
+      { limit: 17000, rate: 0.20, range: '£10,001 - £17,000' },
+      { limit: Infinity, rate: 0.28, range: 'Over £17,000' },
     ]
 
     let remaining = annualIncome
@@ -97,7 +119,16 @@ export function calculateGIBS(data: GibraltarData): { taxAmount: number; effecti
       const taxableInBracket = Math.min(remaining, bracketSize)
 
       if (taxableInBracket > 0) {
-        tax += taxableInBracket * bracket.rate
+        const taxOnBracket = taxableInBracket * bracket.rate
+        tax += taxOnBracket
+
+        breakdown.push({
+          range: bracket.range,
+          rate: bracket.rate,
+          taxableAmount: taxableInBracket,
+          taxOnBracket: taxOnBracket,
+        })
+
         remaining -= taxableInBracket
       }
 
@@ -114,11 +145,11 @@ export function calculateGIBS(data: GibraltarData): { taxAmount: number; effecti
     // - Resto @ 25%
 
     const brackets = [
-      { limit: 17000, rate: 0.16 },     // Primeros £17,000 al 16%
-      { limit: 25000, rate: 0.19 },     // £17,001 - £25,000 al 19%
-      { limit: 40000, rate: 0.25 },     // £25,001 - £40,000 al 25%
-      { limit: 105000, rate: 0.28 },    // £40,001 - £105,000 al 28%
-      { limit: Infinity, rate: 0.25 },  // Más de £105,000 al 25%
+      { limit: 17000, rate: 0.16, range: 'First £17,000' },
+      { limit: 25000, rate: 0.19, range: '£17,001 - £25,000' },
+      { limit: 40000, rate: 0.25, range: '£25,001 - £40,000' },
+      { limit: 105000, rate: 0.28, range: '£40,001 - £105,000' },
+      { limit: Infinity, rate: 0.25, range: 'Over £105,000' },
     ]
 
     let remaining = annualIncome
@@ -129,7 +160,16 @@ export function calculateGIBS(data: GibraltarData): { taxAmount: number; effecti
       const taxableInBracket = Math.min(remaining, bracketSize)
 
       if (taxableInBracket > 0) {
-        tax += taxableInBracket * bracket.rate
+        const taxOnBracket = taxableInBracket * bracket.rate
+        tax += taxOnBracket
+
+        breakdown.push({
+          range: bracket.range,
+          rate: bracket.rate,
+          taxableAmount: taxableInBracket,
+          taxOnBracket: taxOnBracket,
+        })
+
         remaining -= taxableInBracket
       }
 
@@ -143,6 +183,7 @@ export function calculateGIBS(data: GibraltarData): { taxAmount: number; effecti
   return {
     taxAmount: Math.round(tax * 100) / 100,
     effectiveRate: Math.round(effectiveRate * 100) / 100,
+    breakdown,
   }
 }
 

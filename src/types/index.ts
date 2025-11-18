@@ -15,6 +15,14 @@ export interface GibraltarDataExtended extends GibraltarData {
   otherDeductions?: number
 }
 
+// Tax bracket breakdown for detailed comparison
+export interface TaxBracket {
+  range: string // e.g., "First £4,000" or "£4,001 - £16,000"
+  rate: number // e.g., 0.14 for 14%
+  taxableAmount: number // Amount in this bracket
+  taxOnBracket: number // Tax calculated on this bracket
+}
+
 export interface GibraltarResult {
   system: 'ABS' | 'GIBS'
   taxableIncome: number
@@ -25,10 +33,13 @@ export interface GibraltarResult {
   absCalculation?: {
     taxAmount: number
     effectiveRate: number
+    breakdown?: TaxBracket[] // Detailed bracket breakdown
+    totalAllowances?: number // For display purposes
   }
   gibsCalculation?: {
     taxAmount: number
     effectiveRate: number
+    breakdown?: TaxBracket[] // Detailed bracket breakdown
   }
 }
 
