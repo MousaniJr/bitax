@@ -36,7 +36,7 @@ export default function ComparePage() {
 
         // Auto-select last two years if available
         const years = Array.from(new Set(data.declarations.map((d: Declaration) => d.year)))
-          .sort((a, b) => b - a)
+          .sort((a, b) => (b as number) - (a as number)) as number[]
         if (years.length >= 2) {
           setYear1(years[0].toString())
           setYear2(years[1].toString())
