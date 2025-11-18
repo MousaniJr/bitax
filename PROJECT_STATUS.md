@@ -1,8 +1,8 @@
 # 📊 Estado del Proyecto BiTax - Resumen Ejecutivo
 
-**Última actualización:** 17 de Noviembre, 2024
-**Versión:** 2.0.0
-**Estado:** ✅ Fase 1 Completa + ✅ Fase 2 Backend Completo
+**Última actualización:** 18 de Noviembre, 2025
+**Versión:** 2.1.0
+**Estado:** ✅ Fase 1 Completa + ✅ Fase 2 Backend Completo + ✅ Mejoras UI/Cálculos
 
 ---
 
@@ -30,10 +30,15 @@
 **Implementación completa con datos oficiales 2024/2025:**
 
 ✅ **Cálculo ABS (Allowance Based System):**
-- Personal Allowance: £11,100 (Tax Code 52)
+- Personal Allowance: £4,343 (Minimum Allowance garantizado por Gibraltar)
+- Sistema de Tax Codes bidireccional:
+  - Conversión de Allowances → Tax Code
+  - Conversión de Tax Code → Allowances
+  - Validación automática
 - Married Allowance: £3,200 adicional
 - Child Allowance: £1,200 por hijo
 - Mortgage Interest Relief: hasta £25,000
+- **Tax Credit:** Mayor entre £300 o 2% del impuesto calculado
 - Tasas progresivas actualizadas:
   - 17% primeros £4,000
   - 20% hasta £16,000
@@ -50,7 +55,11 @@
 - Comparación automática ABS vs GIBS
 - Recomendación inteligente del mejor sistema
 - Cálculo de ahorro estimado
-- Visualización lado a lado de ambos sistemas
+- **Tabla comparativa detallada lado a lado:**
+  - Desglose por tramos fiscales (bracket-by-bracket)
+  - ABS a la izquierda, GIBS a la derecha
+  - Visualización de tax credit aplicado
+  - Comparación final de ahorro
 - Desglose completo de impuestos
 - Tasa efectiva calculada
 - Ingreso neto estimado
@@ -65,17 +74,32 @@
 
 #### 3. **Calculadora de España (IRPF)**
 
-✅ **Funcionalidades completas:**
-- Declaración de ingresos en España y Gibraltar
-- Aplicación del convenio de doble imposición
-- Cálculo de base imponible general
+✅ **Interfaz simplificada (versión gratuita):**
+- **Selector de origen de ingresos:**
+  - Solo Gibraltar
+  - Solo España
+  - Ambos países
+- Campos condicionales según selección
+- UX mejorada con menos campos visibles
+
+✅ **Campos específicos para trabajadores transfronterizos:**
+- Ingresos anuales de Gibraltar (€)
+- Impuesto pagado en Gibraltar (€) - entrada manual
+- Cotizaciones a la Seguridad Social Gibraltar (€)
+- Nota informativa sobre año fiscal Gibraltar (Jul-Jun)
+- Ingresos de España con campos tradicionales
+
+✅ **Cálculos basados en normativa oficial:**
+- **Uso de valores reales** (no estimaciones):
+  - Impuesto Gibraltar: valor introducido por el usuario
+  - SS Gibraltar: valor introducido por el usuario
+  - SS España: deducibles en base imponible
+- Aplicación del **Tratado España-UK sobre Gibraltar (2021)**
+- Crédito por doble imposición = min(Tax Gibraltar, Tax España sobre renta Gibraltar)
 - Escalas progresivas (estatal + autonómica)
-- Crédito fiscal por impuestos pagados en Gibraltar
 - Deducciones:
   - Vivienda habitual (si compra antes 2013)
   - Maternidad/paternidad (hasta 1.200€)
-  - Familia numerosa
-  - Planes de pensiones
   - Deducciones autonómicas
 - Resultado final: a pagar o a devolver
 - Selección de 17 comunidades autónomas
@@ -95,6 +119,7 @@
 **Archivos:**
 - Componente: `src/components/calculators/SpainCalculator.tsx`
 - Lógica: `src/lib/spainCalculations.ts`
+- Tipos: `src/types/index.ts` (SpainData incluye gibraltarTaxPaid y gibraltarSocialSecurity)
 
 ---
 
@@ -684,5 +709,49 @@ STRIPE_PREMIUM_PRICE_ID="price_..."
 
 ---
 
-**Última actualización:** 17 de Noviembre, 2024
+## 🆕 CAMBIOS RECIENTES (v2.1.0 - 18 Nov 2025)
+
+### Gibraltar Calculator
+✅ **Sistema de Tax Codes completo:**
+- Conversión bidireccional: Allowances ↔ Tax Code
+- Cálculo automático del Tax Code basado en allowances
+- Validación y actualización en tiempo real
+
+✅ **ABS Tax Credit implementado:**
+- Crédito fiscal = max(£300, 2% del impuesto)
+- Mostrado en tabla de comparación detallada
+- Basado en Tax Facts 2023/2024 oficial
+
+✅ **Tabla comparativa mejorada:**
+- Layout lado a lado (ABS izquierda, GIBS derecha)
+- Desglose bracket-by-bracket detallado
+- Visualización de tax credit aplicado
+- Comparación de ahorro total
+
+### Spain Calculator
+✅ **Simplificación de UX:**
+- Selector de origen de ingresos (3 opciones)
+- Campos condicionales según selección
+- Interfaz más limpia y enfocada
+
+✅ **Campos para trabajadores transfronterizos:**
+- Impuesto pagado en Gibraltar (manual)
+- Cotizaciones SS Gibraltar (manual)
+- Nota sobre año fiscal Gibraltar (Jul-Jun)
+
+✅ **Corrección de cálculos IRPF:**
+- Usa impuesto real de Gibraltar (no estimación)
+- Deducción correcta de SS Gibraltar en base imponible
+- Crédito por doble imposición según tratado 2021
+- Fórmula: min(Tax Gibraltar real, Tax España proporcional)
+
+### Documentación
+✅ **Commits realizados:**
+- `feat: Add Gibraltar tax and social security fields to Spain calculator`
+- `refactor: Remove auto-calculate button from Gibraltar tax field`
+- `fix: Use actual Gibraltar tax paid in Spain IRPF calculation`
+
+---
+
+**Última actualización:** 18 de Noviembre, 2025
 **Próxima revisión:** Después de implementar Fase 2A
