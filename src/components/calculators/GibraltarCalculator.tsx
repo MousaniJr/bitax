@@ -14,29 +14,45 @@ export default function GibraltarCalculator() {
   })
 
   const [result, setResult] = useState<GibraltarResult | null>(null)
+  const [isEditingAllowance, setIsEditingAllowance] = useState(false)
 
-  // Sincronizar Total Allowances <-> Tax Code
+  // Sincronizar Total Allowances <-> Tax Code (solo cuando no está editando)
   useEffect(() => {
+    if (isEditingAllowance) return // No actualizar mientras el usuario escribe
+
     // Actualizar Tax Code cuando cambia Total Allowances
     const newTaxCode = allowanceToTaxCode(data.totalAllowances)
     if (newTaxCode !== null && newTaxCode !== data.taxCode) {
       setData((prev) => ({ ...prev, taxCode: newTaxCode }))
     }
-  }, [data.totalAllowances])
+  }, [data.totalAllowances, isEditingAllowance])
 
   const handleCalculate = () => {
-    const calculatedResult = calculateGibraltarTax(data)
+    // Aplicar mínimo antes de calcular
+    const finalData = {
+      ...data,
+      totalAllowances: Math.max(PERSONAL_ALLOWANCE, data.totalAllowances)
+    }
+
+    const calculatedResult = calculateGibraltarTax(finalData)
     setResult(calculatedResult)
 
     // Guardar en localStorage
-    localStorage.setItem('gibraltar-data', JSON.stringify(data))
+    localStorage.setItem('gibraltar-data', JSON.stringify(finalData))
     localStorage.setItem('gibraltar-result', JSON.stringify(calculatedResult))
   }
 
   const handleAllowanceChange = (value: number) => {
-    // Asegurar que no baje del Personal Allowance mínimo
-    const newAllowance = Math.max(PERSONAL_ALLOWANCE, value)
-    setData((prev) => ({ ...prev, totalAllowances: newAllowance }))
+    // Permitir escribir libremente, sin forzar el mínimo
+    setData((prev) => ({ ...prev, totalAllowances: value }))
+  }
+
+  const handleAllowanceBlur = () => {
+    // Al salir del campo, aplicar la validación de mínimo
+    setIsEditingAllowance(false)
+    if (data.totalAllowances < PERSONAL_ALLOWANCE) {
+      setData((prev) => ({ ...prev, totalAllowances: PERSONAL_ALLOWANCE }))
+    }
   }
 
   const handleTaxCodeChange = (code: number) => {
@@ -113,7 +129,9 @@ export default function GibraltarCalculator() {
               <input
                 type="number"
                 value={data.totalAllowances || ''}
-                onChange={(e) => handleAllowanceChange(parseFloat(e.target.value) || PERSONAL_ALLOWANCE)}
+                onChange={(e) => handleAllowanceChange(parseFloat(e.target.value) || 0)}
+                onFocus={() => setIsEditingAllowance(true)}
+                onBlur={handleAllowanceBlur}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
                 placeholder={`Mínimo: ${PERSONAL_ALLOWANCE}`}
                 min={PERSONAL_ALLOWANCE}
