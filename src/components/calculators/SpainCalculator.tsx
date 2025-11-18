@@ -3,9 +3,7 @@
 import { useState } from 'react'
 import { SpainData, SpainResult } from '@/types'
 import { calculateSpainTax } from '@/lib/spainCalculations'
-import { calculateGibraltarTax } from '@/lib/gibraltarCalculations'
-import { PERSONAL_ALLOWANCE } from '@/lib/gibraltarCalculations'
-import { Calculator, FileText, AlertCircle, MapPin, Zap } from 'lucide-react'
+import { Calculator, FileText, AlertCircle, MapPin } from 'lucide-react'
 
 type IncomeSource = 'gibraltar' | 'spain' | 'both'
 
@@ -57,32 +55,6 @@ export default function SpainCalculator() {
     } else if (source === 'spain') {
       setData((prev) => ({ ...prev, incomeGibraltar: 0, gibraltarTaxPaid: 0, gibraltarSocialSecurity: 0 }))
     }
-  }
-
-  // Auto-calculate Gibraltar tax based on income
-  const handleAutoCalculateGibraltarTax = () => {
-    if (data.incomeGibraltar === 0) {
-      alert('Por favor, introduce primero tus ingresos en Gibraltar')
-      return
-    }
-
-    // Exchange rate EUR to GBP (approximate - user should adjust if needed)
-    const EUR_TO_GBP = 0.85 // Approximate rate, can be adjusted
-
-    // Convert EUR income to GBP
-    const incomeInGBP = data.incomeGibraltar * EUR_TO_GBP
-
-    // Calculate Gibraltar tax with minimum allowance
-    const gibraltarResult = calculateGibraltarTax({
-      annualIncome: incomeInGBP,
-      totalAllowances: PERSONAL_ALLOWANCE, // Use minimum allowance
-    })
-
-    // Convert tax back to EUR
-    const taxInEUR = gibraltarResult.taxAmount / EUR_TO_GBP
-
-    // Update the field
-    setData((prev) => ({ ...prev, gibraltarTaxPaid: Math.round(taxInEUR * 100) / 100 }))
   }
 
   return (
@@ -255,31 +227,21 @@ export default function SpainCalculator() {
                     </p>
                   </div>
 
-                  {/* Impuesto pagado en Gibraltar - con auto-cálculo */}
+                  {/* Impuesto pagado en Gibraltar */}
                   <div>
                     <label className="block text-sm font-semibold text-gray-700 mb-2">
-                      Impuesto pagado en Gibraltar (€)
+                      Impuesto pagado en Gibraltar (€) *
                     </label>
-                    <div className="flex gap-2">
-                      <input
-                        type="number"
-                        value={data.gibraltarTaxPaid || ''}
-                        onChange={(e) => handleInputChange('gibraltarTaxPaid', parseFloat(e.target.value) || 0)}
-                        className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        placeholder="Ej: 4200"
-                      />
-                      <button
-                        type="button"
-                        onClick={handleAutoCalculateGibraltarTax}
-                        disabled={data.incomeGibraltar === 0}
-                        className="px-4 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-semibold flex items-center space-x-2 disabled:bg-gray-400 disabled:cursor-not-allowed whitespace-nowrap"
-                      >
-                        <Zap className="h-4 w-4" />
-                        <span>Calcular</span>
-                      </button>
-                    </div>
+                    <input
+                      type="number"
+                      value={data.gibraltarTaxPaid || ''}
+                      onChange={(e) => handleInputChange('gibraltarTaxPaid', parseFloat(e.target.value) || 0)}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="Ej: 4200"
+                    />
                     <p className="text-xs text-gray-500 mt-1">
-                      Impuesto (Income Tax) pagado en Gibraltar. Puedes calcularlo automáticamente o introducirlo manualmente.
+                      Introduce el impuesto (Income Tax) que pagaste en Gibraltar según tu certificado fiscal.
+                      Nota: El año fiscal de Gibraltar es del 1 de julio al 30 de junio.
                     </p>
                   </div>
                 </>
