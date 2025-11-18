@@ -50,6 +50,8 @@ export interface SpainData {
   incomeSpain: number
   incomeGibraltar: number
   socialSecurityContributions: number
+  gibraltarTaxPaid: number // Tax paid in Gibraltar (can be auto-calculated or manual)
+  gibraltarSocialSecurity: number // Social Security paid in Gibraltar (manual only)
   maritalStatus: 'single' | 'married' | 'divorced' | 'widowed'
   hasChildren: boolean
   numberOfChildren: number
