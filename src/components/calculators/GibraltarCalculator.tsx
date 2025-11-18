@@ -9,8 +9,8 @@ import { Calculator, TrendingDown, TrendingUp, Info } from 'lucide-react'
 export default function GibraltarCalculator() {
   const [data, setData] = useState<GibraltarData>({
     annualIncome: 0,
-    totalAllowances: PERSONAL_ALLOWANCE, // Empieza con Personal Allowance mínimo
-    taxCode: 1,
+    totalAllowances: PERSONAL_ALLOWANCE, // Empieza con Minimum Allowance (£4,343)
+    taxCode: 4, // Tax Code 4 corresponde al rango £4,300-£4,399
   })
 
   const [result, setResult] = useState<GibraltarResult | null>(null)
@@ -103,17 +103,17 @@ export default function GibraltarCalculator() {
             />
           </div>
 
-          {/* Personal Allowance (informativo, solo lectura) */}
+          {/* Minimum Allowance (informativo, solo lectura) */}
           <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
             <div className="flex items-start space-x-3">
               <Info className="h-5 w-5 text-blue-600 mt-0.5 flex-shrink-0" />
               <div className="flex-1">
                 <label className="block text-sm font-semibold text-blue-900 mb-2">
-                  Personal Allowance (Mínimo garantizado)
+                  Minimum Allowance (Mínimo garantizado por Gibraltar)
                 </label>
                 <div className="text-2xl font-bold text-blue-900">£{PERSONAL_ALLOWANCE.toLocaleString()}</div>
                 <p className="text-xs text-blue-700 mt-1">
-                  Este es el allowance personal mínimo para el año fiscal 2025/26. Tu Total Allowance debe ser igual o superior a este valor.
+                  Gibraltar aplica automáticamente un "top-up" para garantizar que cualquier persona tenga como mínimo £{PERSONAL_ALLOWANCE.toLocaleString()} en allowances (año fiscal 2025/26). Tu Total Allowance debe ser igual o superior a este valor.
                 </p>
               </div>
             </div>

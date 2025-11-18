@@ -1,10 +1,11 @@
 import { GibraltarData, GibraltarResult } from '@/types'
 
 /**
- * Personal Allowance mínimo garantizado (2025/26)
- * Fuente: Gibraltar Income Tax Office
+ * Minimum Allowance garantizado por Gibraltar (2025/26)
+ * Gibraltar aplica automáticamente un top-up si tus allowances son menores a £4,343
+ * Fuente: Gibraltar Income Tax Office - Applied automatically to any individual
  */
-export const PERSONAL_ALLOWANCE = 3455
+export const PERSONAL_ALLOWANCE = 4343
 
 /**
  * Calcula el impuesto bajo el sistema ABS (Allowance Based System)
