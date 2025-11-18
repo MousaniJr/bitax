@@ -6,6 +6,9 @@ import { createDeclarationSchema } from '@/lib/validations/declarations'
 import { z } from 'zod'
 import { hasActivePremium } from '@/lib/subscription/mockStripe'
 
+// Force dynamic rendering for this route
+export const dynamic = 'force-dynamic'
+
 /**
  * POST /api/declarations
  * Crea una nueva declaración fiscal

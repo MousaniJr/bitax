@@ -3,6 +3,9 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { activatePremiumSubscription, MOCK_MODE } from '@/lib/subscription/mockStripe'
 
+// Force dynamic rendering for this route
+export const dynamic = 'force-dynamic'
+
 /**
  * POST /api/subscription/upgrade
  * Activa una suscripción premium (modo mock para desarrollo)

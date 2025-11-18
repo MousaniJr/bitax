@@ -3,6 +3,9 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { getSubscriptionStatus } from '@/lib/subscription/mockStripe'
 
+// Force dynamic rendering for this route
+export const dynamic = 'force-dynamic'
+
 /**
  * GET /api/subscription/status
  * Obtiene el estado de la suscripción del usuario autenticado
