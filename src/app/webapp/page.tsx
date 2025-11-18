@@ -26,8 +26,8 @@ export default function WebAppPage() {
       fetch('/api/subscription/status')
         .then(res => res.json())
         .then(data => {
-          setIsPremium(data.isPremium || false)
-          setUsePremiumMode(data.isPremium || false)
+          setIsPremium(data.hasPremium || false)
+          setUsePremiumMode(data.hasPremium || false)
         })
         .catch(() => setIsPremium(false))
     }
