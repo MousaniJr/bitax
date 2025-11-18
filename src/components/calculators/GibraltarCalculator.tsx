@@ -1,24 +1,28 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { GibraltarData, GibraltarResult } from '@/types'
-import { calculateGibraltarTax } from '@/lib/gibraltarCalculations'
-import { Calculator, TrendingDown, TrendingUp } from 'lucide-react'
+import { calculateGibraltarTax, PERSONAL_ALLOWANCE } from '@/lib/gibraltarCalculations'
+import { allowanceToTaxCode, taxCodeToAllowance, getTaxCodeRange } from '@/lib/taxCodeUtils'
+import { Calculator, TrendingDown, TrendingUp, Info } from 'lucide-react'
 
 export default function GibraltarCalculator() {
   const [data, setData] = useState<GibraltarData>({
     annualIncome: 0,
-    allowances: 0,
-    yearsInGibraltar: 0,
-    maritalStatus: 'single',
-    hasChildren: false,
-    numberOfChildren: 0,
-    hasMortgage: false,
-    mortgageInterest: 0,
-    otherDeductions: 0,
+    totalAllowances: PERSONAL_ALLOWANCE, // Empieza con Personal Allowance mínimo
+    taxCode: 1,
   })
 
   const [result, setResult] = useState<GibraltarResult | null>(null)
+
+  // Sincronizar Total Allowances <-> Tax Code
+  useEffect(() => {
+    // Actualizar Tax Code cuando cambia Total Allowances
+    const newTaxCode = allowanceToTaxCode(data.totalAllowances)
+    if (newTaxCode !== null && newTaxCode !== data.taxCode) {
+      setData((prev) => ({ ...prev, taxCode: newTaxCode }))
+    }
+  }, [data.totalAllowances])
 
   const handleCalculate = () => {
     const calculatedResult = calculateGibraltarTax(data)
@@ -29,9 +33,29 @@ export default function GibraltarCalculator() {
     localStorage.setItem('gibraltar-result', JSON.stringify(calculatedResult))
   }
 
-  const handleInputChange = (field: keyof GibraltarData, value: any) => {
-    setData((prev) => ({ ...prev, [field]: value }))
+  const handleAllowanceChange = (value: number) => {
+    // Asegurar que no baje del Personal Allowance mínimo
+    const newAllowance = Math.max(PERSONAL_ALLOWANCE, value)
+    setData((prev) => ({ ...prev, totalAllowances: newAllowance }))
   }
+
+  const handleTaxCodeChange = (code: number) => {
+    // Validar que el código esté en el rango 1-52
+    if (code < 1 || code > 52) return
+
+    // Calcular el allowance correspondiente (punto medio del rango)
+    const allowance = taxCodeToAllowance(code)
+    if (allowance !== null) {
+      setData((prev) => ({
+        ...prev,
+        taxCode: code,
+        totalAllowances: allowance,
+      }))
+    }
+  }
+
+  // Obtener el rango del Tax Code actual
+  const taxCodeRange = data.taxCode ? getTaxCodeRange(data.taxCode) : null
 
   return (
     <div className="max-w-4xl mx-auto">
@@ -47,144 +71,95 @@ export default function GibraltarCalculator() {
           Introduce tus datos para comparar automáticamente entre ABS (Allowance Based System) y GIBS (Gross Income Based System).
         </p>
 
-        {/* Formulario */}
+        {/* Formulario Simplificado */}
         <div className="space-y-6">
           {/* Ingresos anuales */}
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Ingresos Anuales Brutos (£)
+              Ingresos Anuales Brutos (£) *
             </label>
             <input
               type="number"
               value={data.annualIncome || ''}
-              onChange={(e) => handleInputChange('annualIncome', parseFloat(e.target.value) || 0)}
+              onChange={(e) => setData((prev) => ({ ...prev, annualIncome: parseFloat(e.target.value) || 0 }))}
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
               placeholder="Ej: 45000"
             />
           </div>
 
-          {/* Estado civil */}
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Estado Civil
-            </label>
-            <select
-              value={data.maritalStatus}
-              onChange={(e) => handleInputChange('maritalStatus', e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
-            >
-              <option value="single">Soltero/a</option>
-              <option value="married">Casado/a</option>
-              <option value="civil_partnership">Pareja de hecho</option>
-            </select>
+          {/* Personal Allowance (informativo, solo lectura) */}
+          <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+            <div className="flex items-start space-x-3">
+              <Info className="h-5 w-5 text-blue-600 mt-0.5 flex-shrink-0" />
+              <div className="flex-1">
+                <label className="block text-sm font-semibold text-blue-900 mb-2">
+                  Personal Allowance (Mínimo garantizado)
+                </label>
+                <div className="text-2xl font-bold text-blue-900">£{PERSONAL_ALLOWANCE.toLocaleString()}</div>
+                <p className="text-xs text-blue-700 mt-1">
+                  Este es el allowance personal mínimo para el año fiscal 2025/26. Tu Total Allowance debe ser igual o superior a este valor.
+                </p>
+              </div>
+            </div>
           </div>
 
-          {/* Hijos */}
-          <div>
-            <label className="flex items-center space-x-2 mb-3">
-              <input
-                type="checkbox"
-                checked={data.hasChildren}
-                onChange={(e) => {
-                  handleInputChange('hasChildren', e.target.checked)
-                  if (!e.target.checked) handleInputChange('numberOfChildren', 0)
-                }}
-                className="w-5 h-5 text-red-600 rounded focus:ring-red-500"
-              />
-              <span className="text-sm font-semibold text-gray-700">Tengo hijos</span>
-            </label>
-
-            {data.hasChildren && (
+          {/* Grid para Total Allowances y Tax Code */}
+          <div className="grid md:grid-cols-2 gap-6">
+            {/* Total Allowances */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Total Allowances (£) *
+              </label>
               <input
                 type="number"
-                value={data.numberOfChildren || ''}
-                onChange={(e) => handleInputChange('numberOfChildren', parseInt(e.target.value) || 0)}
+                value={data.totalAllowances || ''}
+                onChange={(e) => handleAllowanceChange(parseFloat(e.target.value) || PERSONAL_ALLOWANCE)}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                placeholder="Número de hijos"
-                min="0"
+                placeholder={`Mínimo: ${PERSONAL_ALLOWANCE}`}
+                min={PERSONAL_ALLOWANCE}
               />
-            )}
-          </div>
+              <p className="text-xs text-gray-500 mt-1">
+                Incluye: Personal + Spouse + Children + Mortgage + Otros
+              </p>
+            </div>
 
-          {/* Allowances */}
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Allowances adicionales (£)
-            </label>
-            <input
-              type="number"
-              value={data.allowances || ''}
-              onChange={(e) => handleInputChange('allowances', parseFloat(e.target.value) || 0)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
-              placeholder="Ej: 5000"
-            />
-            <p className="text-xs text-gray-500 mt-1">Allowances específicos a los que tienes derecho</p>
-          </div>
-
-          {/* Años en Gibraltar */}
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Años trabajando en Gibraltar
-            </label>
-            <input
-              type="number"
-              value={data.yearsInGibraltar || ''}
-              onChange={(e) => handleInputChange('yearsInGibraltar', parseInt(e.target.value) || 0)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
-              placeholder="Ej: 3"
-              min="0"
-            />
-          </div>
-
-          {/* Hipoteca */}
-          <div>
-            <label className="flex items-center space-x-2 mb-3">
+            {/* Tax Code */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Tax Code
+              </label>
               <input
-                type="checkbox"
-                checked={data.hasMortgage}
-                onChange={(e) => {
-                  handleInputChange('hasMortgage', e.target.checked)
-                  if (!e.target.checked) handleInputChange('mortgageInterest', 0)
-                }}
-                className="w-5 h-5 text-red-600 rounded focus:ring-red-500"
+                type="number"
+                value={data.taxCode || ''}
+                onChange={(e) => handleTaxCodeChange(parseInt(e.target.value) || 1)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                placeholder="1-52"
+                min="1"
+                max="52"
               />
-              <span className="text-sm font-semibold text-gray-700">Tengo hipoteca</span>
-            </label>
-
-            {data.hasMortgage && (
-              <div>
-                <label className="block text-sm font-medium text-gray-600 mb-2">
-                  Intereses de hipoteca anuales (£)
-                </label>
-                <input
-                  type="number"
-                  value={data.mortgageInterest || ''}
-                  onChange={(e) => handleInputChange('mortgageInterest', parseFloat(e.target.value) || 0)}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                  placeholder="Ej: 3000"
-                />
-              </div>
-            )}
+              <p className="text-xs text-gray-500 mt-1">
+                {taxCodeRange && (
+                  <>
+                    Code {data.taxCode}: £{taxCodeRange.min.toLocaleString()} - {taxCodeRange.max ? `£${taxCodeRange.max.toLocaleString()}` : 'OVER'}
+                  </>
+                )}
+              </p>
+            </div>
           </div>
 
-          {/* Otras deducciones */}
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Otras deducciones (£)
-            </label>
-            <input
-              type="number"
-              value={data.otherDeductions || ''}
-              onChange={(e) => handleInputChange('otherDeductions', parseFloat(e.target.value) || 0)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
-              placeholder="Ej: 1000"
-            />
+          {/* Nota explicativa */}
+          <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+            <p className="text-sm text-gray-600">
+              <strong>💡 Consejo:</strong> Puedes rellenar cualquiera de los dos campos (Total Allowances o Tax Code) y el otro se calculará automáticamente.
+              Si conoces tu Tax Code de tu nómina, introdúcelo aquí. Si conoces tus allowances totales, introdúcelos y se calculará el Tax Code correspondiente.
+            </p>
           </div>
 
           {/* Botón calcular */}
           <button
             onClick={handleCalculate}
-            className="w-full bg-red-600 text-white py-4 rounded-lg hover:bg-red-700 transition-colors font-semibold text-lg shadow-md hover:shadow-lg"
+            disabled={data.annualIncome === 0}
+            className="w-full bg-red-600 text-white py-4 rounded-lg hover:bg-red-700 transition-colors font-semibold text-lg shadow-md hover:shadow-lg disabled:bg-gray-400 disabled:cursor-not-allowed"
           >
             Calcular Impuestos
           </button>
@@ -269,16 +244,16 @@ export default function GibraltarCalculator() {
                     <p className="text-2xl font-bold">£{data.annualIncome.toLocaleString()}</p>
                   </div>
                   <div>
+                    <p className="text-sm text-gray-600">Total Allowances</p>
+                    <p className="text-2xl font-bold">£{data.totalAllowances.toLocaleString()}</p>
+                  </div>
+                  <div>
                     <p className="text-sm text-gray-600">Impuesto a pagar</p>
                     <p className="text-2xl font-bold text-red-600">£{result.taxAmount.toLocaleString()}</p>
                   </div>
                   <div>
                     <p className="text-sm text-gray-600">Ingreso neto</p>
                     <p className="text-2xl font-bold text-green-600">£{result.netIncome.toLocaleString()}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-600">Tasa efectiva</p>
-                    <p className="text-2xl font-bold">{result.effectiveRate}%</p>
                   </div>
                 </div>
               </div>

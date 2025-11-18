@@ -1,14 +1,18 @@
-// Tipos para Gibraltar
+// Tipos para Gibraltar (Versión Simplificada - Free Tier)
 export interface GibraltarData {
   annualIncome: number
-  allowances: number
-  yearsInGibraltar: number
-  maritalStatus: 'single' | 'married' | 'civil_partnership'
-  hasChildren: boolean
-  numberOfChildren: number
-  hasMortgage: boolean
-  mortgageInterest: number
-  otherDeductions: number
+  totalAllowances: number
+  taxCode?: number // Optional: calculated from totalAllowances or vice versa
+}
+
+// Extended version for premium features (backward compatibility)
+export interface GibraltarDataExtended extends GibraltarData {
+  maritalStatus?: 'single' | 'married' | 'civil_partnership'
+  hasChildren?: boolean
+  numberOfChildren?: number
+  hasMortgage?: boolean
+  mortgageInterest?: number
+  otherDeductions?: number
 }
 
 export interface GibraltarResult {

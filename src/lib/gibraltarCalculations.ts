@@ -1,57 +1,29 @@
 import { GibraltarData, GibraltarResult } from '@/types'
 
 /**
+ * Personal Allowance mínimo garantizado (2025/26)
+ * Fuente: Gibraltar Income Tax Office
+ */
+export const PERSONAL_ALLOWANCE = 3455
+
+/**
  * Calcula el impuesto bajo el sistema ABS (Allowance Based System)
  * Sistema tradicional basado en allowances y tasas progresivas
+ *
+ * Versión simplificada: el usuario proporciona directamente el Total Allowances
  *
  * Referencias:
  * - Gibraltar Income Tax Office 2025/26
  * - Fuente: https://www.gibraltar.gov.gi/income-tax-office
  */
 export function calculateABS(data: GibraltarData): { taxAmount: number; effectiveRate: number } {
-  const {
-    annualIncome,
-    allowances,
-    maritalStatus,
-    hasChildren,
-    numberOfChildren,
-    hasMortgage,
-    mortgageInterest,
-    otherDeductions,
-  } = data
+  const { annualIncome, totalAllowances } = data
 
-  // Allowances base (según documentación oficial 2025/26)
-  let totalAllowances = allowances || 0
+  // El totalAllowances ya incluye todo (personal + spouse + children + mortgage + otros)
+  // El usuario lo introduce manualmente o se calcula desde el Tax Code
 
-  // Personal Allowance estándar: £3,455 (2025/26)
-  const personalAllowance = 3455
-
-  // Allowance mínima: £4,343 (top-up automático si aplica)
-  const minimumAllowance = 4343
-
-  // Spouse/Civil Partner Allowance: £3,455 adicional
-  if (maritalStatus === 'married' || maritalStatus === 'civil_partnership') {
-    totalAllowances += 3455
-  }
-
-  // Child Allowance: £1,190 por cada hijo (menor de 16 o educación tiempo completo)
-  if (hasChildren && numberOfChildren > 0) {
-    totalAllowances += numberOfChildren * 1190
-  }
-
-  // Mortgage Interest Relief: sobre préstamos de hasta £350,000
-  // Asumimos que el interés introducido está dentro del límite
-  const mortgageDeduction = hasMortgage ? mortgageInterest : 0
-
-  // Home Purchase Allowance: £13,000 si es propietario y residencia principal
-  // Nota: No pedimos este dato en el formulario actual, podría añadirse
-
-  // Total de deducciones (usar el mayor entre allowances calculadas y el mínimo)
-  const calculatedAllowances = totalAllowances + personalAllowance
-  const finalAllowances = Math.max(calculatedAllowances, minimumAllowance) + mortgageDeduction + otherDeductions
-
-  // Base imponible (Gross Income minus Allowances)
-  const taxableIncome = Math.max(0, annualIncome - finalAllowances)
+  // Base imponible (Gross Income minus Total Allowances)
+  const taxableIncome = Math.max(0, annualIncome - totalAllowances)
 
   // Tasas progresivas ABS OFICIALES (2025/26):
   // - Primeros £4,000 al 14%
