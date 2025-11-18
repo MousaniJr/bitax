@@ -9,6 +9,8 @@ export function calculateSpainTax(data: SpainData): SpainResult {
     incomeSpain,
     incomeGibraltar,
     socialSecurityContributions,
+    gibraltarTaxPaid,
+    gibraltarSocialSecurity,
     maritalStatus,
     hasChildren,
     numberOfChildren,
@@ -29,8 +31,8 @@ export function calculateSpainTax(data: SpainData): SpainResult {
   // Gastos deducibles (mínimo 2.000€)
   const workExpenses = Math.max(2000, grossIncome * 0.02)
 
-  // Cotizaciones a la Seguridad Social son deducibles
-  const deductibleSocialSecurity = socialSecurityContributions
+  // Cotizaciones a la Seguridad Social son deducibles (España + Gibraltar)
+  const deductibleSocialSecurity = socialSecurityContributions + (gibraltarSocialSecurity || 0)
 
   // Rendimiento neto
   const netWorkIncome = grossIncome - workExpenses - deductibleSocialSecurity
@@ -90,18 +92,19 @@ export function calculateSpainTax(data: SpainData): SpainResult {
   totalDeductions += regionalDeductions || 0
 
   // 9. CRÉDITO POR DOBLE IMPOSICIÓN (Gibraltar)
-  // España permite deducir el impuesto pagado en Gibraltar
+  // Para trabajadores transfronterizos, España permite deducir el impuesto pagado en Gibraltar
+  // Según el tratado España-UK sobre Gibraltar (2021)
   // Se calcula como el menor entre:
   // - Impuesto efectivamente pagado en Gibraltar
   // - Impuesto que correspondería pagar en España por esa renta
   const gibraltarProportion = grossIncome > 0 ? incomeGibraltar / grossIncome : 0
   const gibraltarTaxCredit = totalTax * gibraltarProportion
 
-  // Estimamos el impuesto pagado en Gibraltar (aproximado al 20-25%)
-  const estimatedGibraltarTax = incomeGibraltar * 0.22
+  // Usamos el impuesto real pagado en Gibraltar (introducido por el usuario)
+  const actualGibraltarTax = gibraltarTaxPaid || 0
 
   // El crédito es el menor de los dos
-  const doubleTaxationRelief = Math.min(gibraltarTaxCredit, estimatedGibraltarTax)
+  const doubleTaxationRelief = Math.min(gibraltarTaxCredit, actualGibraltarTax)
 
   // 10. CUOTA DIFERENCIAL (Resultado final)
   const finalTax = Math.max(0, totalTax - totalDeductions - doubleTaxationRelief - retentions)
