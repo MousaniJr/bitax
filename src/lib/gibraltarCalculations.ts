@@ -5,8 +5,8 @@ import { GibraltarData, GibraltarResult } from '@/types'
  * Sistema tradicional basado en allowances y tasas progresivas
  *
  * Referencias:
- * - Tax Codes 2024/2025: Allowances desde £4,000 hasta £11,100+
- * - Fuente: Gibraltar Income Tax Office
+ * - Gibraltar Income Tax Office 2025/26
+ * - Fuente: https://www.gibraltar.gov.gi/income-tax-office
  */
 export function calculateABS(data: GibraltarData): { taxAmount: number; effectiveRate: number } {
   const {
@@ -20,44 +20,48 @@ export function calculateABS(data: GibraltarData): { taxAmount: number; effectiv
     otherDeductions,
   } = data
 
-  // Allowances base (según documentación oficial 2024/25)
+  // Allowances base (según documentación oficial 2025/26)
   let totalAllowances = allowances || 0
 
-  // Personal allowance estándar (Tax Code aproximado 52 = £11,100+)
-  // Para la mayoría de residentes está entre £4,000 - £11,100 según tax code
-  const personalAllowance = 11100 // Allowance máximo estándar
+  // Personal Allowance estándar: £3,455 (2025/26)
+  const personalAllowance = 3455
 
-  // Married Person's Allowance (adicional para casados)
-  // Aproximadamente £3,200 adicional
+  // Allowance mínima: £4,343 (top-up automático si aplica)
+  const minimumAllowance = 4343
+
+  // Spouse/Civil Partner Allowance: £3,455 adicional
   if (maritalStatus === 'married' || maritalStatus === 'civil_partnership') {
-    totalAllowances += 3200
+    totalAllowances += 3455
   }
 
-  // Child Allowance (por cada hijo dependiente)
-  // Aproximadamente £1,200 por hijo
+  // Child Allowance: £1,190 por cada hijo (menor de 16 o educación tiempo completo)
   if (hasChildren && numberOfChildren > 0) {
-    totalAllowances += numberOfChildren * 1200
+    totalAllowances += numberOfChildren * 1190
   }
 
-  // Deducción de intereses de hipoteca (Mortgage Interest Relief)
-  // Limitado a £25,000 de intereses anuales
-  const mortgageDeduction = hasMortgage ? Math.min(mortgageInterest, 25000) : 0
+  // Mortgage Interest Relief: sobre préstamos de hasta £350,000
+  // Asumimos que el interés introducido está dentro del límite
+  const mortgageDeduction = hasMortgage ? mortgageInterest : 0
 
-  // Total de deducciones
-  const totalDeductions = totalAllowances + personalAllowance + mortgageDeduction + otherDeductions
+  // Home Purchase Allowance: £13,000 si es propietario y residencia principal
+  // Nota: No pedimos este dato en el formulario actual, podría añadirse
+
+  // Total de deducciones (usar el mayor entre allowances calculadas y el mínimo)
+  const calculatedAllowances = totalAllowances + personalAllowance
+  const finalAllowances = Math.max(calculatedAllowances, minimumAllowance) + mortgageDeduction + otherDeductions
 
   // Base imponible (Gross Income minus Allowances)
-  const taxableIncome = Math.max(0, annualIncome - totalDeductions)
+  const taxableIncome = Math.max(0, annualIncome - finalAllowances)
 
-  // Tasas progresivas ABS (según normativa Gibraltar 2024/25)
-  // Estas tasas son aproximadas y pueden variar según actualizaciones
+  // Tasas progresivas ABS OFICIALES (2025/26):
+  // - Primeros £4,000 al 14%
+  // - Siguientes £12,000 al 17%
+  // - Resto al 39%
   let tax = 0
   const brackets = [
-    { limit: 4000, rate: 0.17 },    // Primeros £4,000 al 17%
-    { limit: 16000, rate: 0.20 },   // £4,001 - £16,000 al 20%
-    { limit: 25000, rate: 0.22 },   // £16,001 - £25,000 al 22%
-    { limit: 40000, rate: 0.27 },   // £25,001 - £40,000 al 27%
-    { limit: Infinity, rate: 0.28 }, // Más de £40,000 al 28%
+    { limit: 4000, rate: 0.14 },     // Primeros £4,000 al 14%
+    { limit: 16000, rate: 0.17 },    // £4,001 - £16,000 al 17%
+    { limit: Infinity, rate: 0.39 }, // Más de £16,000 al 39%
   ]
 
   let remaining = taxableIncome
@@ -86,37 +90,80 @@ export function calculateABS(data: GibraltarData): { taxAmount: number; effectiv
 
 /**
  * Calcula el impuesto bajo el sistema GIBS (Gross Income Based System)
- * Sistema más simple basado en ingresos brutos con tasa fija
+ * Sistema con tasas progresivas sobre ingresos brutos
  *
  * Referencias:
- * - Tax Code "X" - Standard Rate 20% (según documentación oficial 2024/25)
- * - Fuente: Gibraltar Income Tax Office
+ * - Gibraltar Income Tax Office 2025/26
+ * - Fuente: https://www.gibraltar.gov.gi/income-tax-office
+ * - GIBS tiene dos estructuras según nivel de ingresos
  */
 export function calculateGIBS(data: GibraltarData): { taxAmount: number; effectiveRate: number } {
-  const { annualIncome, maritalStatus, hasChildren, numberOfChildren } = data
+  const { annualIncome } = data
 
-  // GIBS: tasa estándar del 20% sobre ingresos brutos (Tax Code "X")
-  // Según documentación oficial: "CODE X STANDARD RATE 20%"
-  let baseRate = 0.20
+  let tax = 0
 
-  // En GIBS existen pequeños ajustes por circunstancias personales
-  // (aunque son mínimos comparados con ABS)
+  // GIBS tiene dos estructuras de tasas según el nivel de ingresos
 
-  // Reducción marginal para casados/pareja de hecho
-  if (maritalStatus === 'married' || maritalStatus === 'civil_partnership') {
-    baseRate -= 0.003 // Reducción aproximada del 0.3%
+  if (annualIncome <= 25000) {
+    // Para ingresos hasta £25,000:
+    // - Primeros £10,000 @ 6%
+    // - Siguientes £7,000 @ 20%
+    // - Resto @ 28%
+
+    const brackets = [
+      { limit: 10000, rate: 0.06 },    // Primeros £10,000 al 6%
+      { limit: 17000, rate: 0.20 },    // £10,001 - £17,000 al 20%
+      { limit: Infinity, rate: 0.28 }, // Más de £17,000 al 28%
+    ]
+
+    let remaining = annualIncome
+    let previousLimit = 0
+
+    for (const bracket of brackets) {
+      const bracketSize = bracket.limit - previousLimit
+      const taxableInBracket = Math.min(remaining, bracketSize)
+
+      if (taxableInBracket > 0) {
+        tax += taxableInBracket * bracket.rate
+        remaining -= taxableInBracket
+      }
+
+      if (remaining <= 0) break
+      previousLimit = bracket.limit
+    }
+
+  } else {
+    // Para ingresos superiores a £25,000:
+    // - Primeros £17,000 @ 16%
+    // - Siguientes £8,000 @ 19%
+    // - Siguientes £15,000 @ 25%
+    // - Siguientes £65,000 @ 28%
+    // - Resto @ 25%
+
+    const brackets = [
+      { limit: 17000, rate: 0.16 },     // Primeros £17,000 al 16%
+      { limit: 25000, rate: 0.19 },     // £17,001 - £25,000 al 19%
+      { limit: 40000, rate: 0.25 },     // £25,001 - £40,000 al 25%
+      { limit: 105000, rate: 0.28 },    // £40,001 - £105,000 al 28%
+      { limit: Infinity, rate: 0.25 },  // Más de £105,000 al 25%
+    ]
+
+    let remaining = annualIncome
+    let previousLimit = 0
+
+    for (const bracket of brackets) {
+      const bracketSize = bracket.limit - previousLimit
+      const taxableInBracket = Math.min(remaining, bracketSize)
+
+      if (taxableInBracket > 0) {
+        tax += taxableInBracket * bracket.rate
+        remaining -= taxableInBracket
+      }
+
+      if (remaining <= 0) break
+      previousLimit = bracket.limit
+    }
   }
-
-  // Reducción marginal por hijos dependientes
-  if (hasChildren && numberOfChildren > 0) {
-    baseRate -= Math.min(numberOfChildren * 0.002, 0.007) // Máximo 0.7% adicional
-  }
-
-  // GIBS se calcula sobre ingresos brutos sin deducciones significativas
-  const taxableIncome = annualIncome
-
-  // Cálculo directo
-  const tax = taxableIncome * baseRate
 
   const effectiveRate = annualIncome > 0 ? (tax / annualIncome) * 100 : 0
 
