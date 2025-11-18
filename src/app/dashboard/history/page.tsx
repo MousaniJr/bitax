@@ -12,6 +12,7 @@ import {
   Search,
   Plus,
 } from 'lucide-react'
+import ConfirmModal from '@/components/ui/ConfirmModal'
 
 interface Declaration {
   id: string
@@ -34,6 +35,9 @@ export default function HistoryPage() {
   const [filterYear, setFilterYear] = useState<string>('')
   const [filterType, setFilterType] = useState<string>('')
   const [searchTerm, setSearchTerm] = useState('')
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const [deletingId, setDeletingId] = useState<string | null>(null)
+  const [isDeleting, setIsDeleting] = useState(false)
 
   useEffect(() => {
     fetchDeclarations()
@@ -61,17 +65,23 @@ export default function HistoryPage() {
     }
   }
 
-  const handleDelete = async (id: string) => {
-    if (!confirm('¿Estás seguro de que quieres eliminar esta declaración?')) {
-      return
-    }
+  const handleDeleteClick = (id: string) => {
+    setDeletingId(id)
+    setShowDeleteModal(true)
+  }
 
+  const handleDeleteConfirm = async () => {
+    if (!deletingId) return
+
+    setIsDeleting(true)
     try {
-      const res = await fetch(`/api/declarations/${id}`, {
+      const res = await fetch(`/api/declarations/${deletingId}`, {
         method: 'DELETE',
       })
 
       if (res.ok) {
+        setShowDeleteModal(false)
+        setDeletingId(null)
         fetchDeclarations()
       } else {
         alert('Error al eliminar declaración')
@@ -79,7 +89,14 @@ export default function HistoryPage() {
     } catch (error) {
       console.error('Error deleting declaration:', error)
       alert('Error al eliminar declaración')
+    } finally {
+      setIsDeleting(false)
     }
+  }
+
+  const handleDeleteCancel = () => {
+    setShowDeleteModal(false)
+    setDeletingId(null)
   }
 
   const getTypeLabel = (type: string) => {
@@ -298,7 +315,7 @@ export default function HistoryPage() {
 
                   <div className="flex items-center gap-2">
                     <button
-                      onClick={() => handleDelete(declaration.id)}
+                      onClick={() => handleDeleteClick(declaration.id)}
                       className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition"
                       title="Eliminar"
                     >
@@ -321,6 +338,19 @@ export default function HistoryPage() {
           </p>
         </div>
       )}
+
+      {/* Delete Confirmation Modal */}
+      <ConfirmModal
+        isOpen={showDeleteModal}
+        onClose={handleDeleteCancel}
+        onConfirm={handleDeleteConfirm}
+        title="Eliminar Declaración"
+        message="¿Estás seguro de que quieres eliminar esta declaración? Esta acción no se puede deshacer."
+        confirmText="Eliminar"
+        cancelText="Cancelar"
+        variant="danger"
+        isLoading={isDeleting}
+      />
     </div>
   )
 }

@@ -12,6 +12,7 @@ import {
   Sparkles,
   Check,
 } from 'lucide-react'
+import ConfirmModal from '@/components/ui/ConfirmModal'
 
 interface SubscriptionData {
   hasPremium: boolean
@@ -28,6 +29,7 @@ export default function SubscriptionPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [isUpgrading, setIsUpgrading] = useState(false)
   const [isCanceling, setIsCanceling] = useState(false)
+  const [showCancelModal, setShowCancelModal] = useState(false)
 
   useEffect(() => {
     fetchSubscription()
@@ -69,11 +71,11 @@ export default function SubscriptionPage() {
     }
   }
 
-  const handleCancel = async () => {
-    if (!confirm('¿Estás seguro de que quieres cancelar tu suscripción Premium?')) {
-      return
-    }
+  const handleCancelClick = () => {
+    setShowCancelModal(true)
+  }
 
+  const handleCancelConfirm = async () => {
     setIsCanceling(true)
     try {
       const res = await fetch('/api/subscription/cancel', {
@@ -81,6 +83,7 @@ export default function SubscriptionPage() {
       })
 
       if (res.ok) {
+        setShowCancelModal(false)
         await fetchSubscription()
         router.refresh()
       } else {
@@ -223,7 +226,7 @@ export default function SubscriptionPage() {
               ) : (
                 !isCanceled && (
                   <button
-                    onClick={handleCancel}
+                    onClick={handleCancelClick}
                     disabled={isCanceling}
                     className="flex-1 bg-white text-red-600 py-3 px-6 rounded-lg font-semibold hover:bg-red-50 transition border border-red-200 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
@@ -308,6 +311,19 @@ export default function SubscriptionPage() {
           </div>
         </div>
       )}
+
+      {/* Cancel Subscription Modal */}
+      <ConfirmModal
+        isOpen={showCancelModal}
+        onClose={() => setShowCancelModal(false)}
+        onConfirm={handleCancelConfirm}
+        title="Cancelar Suscripción"
+        message="¿Estás seguro de que quieres cancelar tu suscripción Premium? Seguirás teniendo acceso hasta el final de tu período de facturación actual."
+        confirmText="Sí, cancelar"
+        cancelText="No, mantener"
+        variant="danger"
+        isLoading={isCanceling}
+      />
     </div>
   )
 }
