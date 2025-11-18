@@ -43,7 +43,7 @@ export default function WebAppPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           year: new Date().getFullYear(),
-          type: 'gibraltar',
+          type: 'GIBRALTAR',
           data: { gibraltarData: data, gibraltarResult: result },
         }),
       })
@@ -68,7 +68,7 @@ export default function WebAppPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           year: new Date().getFullYear(),
-          type: 'spain',
+          type: 'SPAIN',
           data: { spainData: data, spainResult: result },
         }),
       })
