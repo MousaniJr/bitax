@@ -1,6 +1,10 @@
 Utilizaré esta carpeta para subir archivos para ser utilizados como referencias.
 
-Toda la información para la calculadora de gibraltar esta aquí:
+Toda la información para la calculadora de gibraltar estan aquí en estos links:
+https://www.gibraltar.gov.gi/income-tax-office
+https://www.gibraltar.gov.gi/income-tax-office/individuals-and-employees/paye
+
+Este es un resumen de lo que hay en la web.
 
 Income Tax Office
 Income Tax for Individuals
