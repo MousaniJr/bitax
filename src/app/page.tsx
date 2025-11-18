@@ -1,7 +1,12 @@
+'use client'
+
 import Link from 'next/link'
-import { Calculator, FileText, Shield, Users, CheckCircle, AlertCircle } from 'lucide-react'
+import { useSession } from 'next-auth/react'
+import { Calculator, FileText, Shield, Users, CheckCircle, AlertCircle, LogIn, UserPlus, LayoutDashboard } from 'lucide-react'
 
 export default function HomePage() {
+  const { data: session, status } = useSession()
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
       {/* Header/Navigation */}
@@ -16,12 +21,36 @@ export default function HomePage() {
             <a href="#funcionalidades" className="text-gray-700 hover:text-blue-600">Funcionalidades</a>
             <a href="#suscripcion" className="text-gray-700 hover:text-blue-600">Suscripción</a>
           </div>
-          <Link
-            href="/webapp"
-            className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors font-semibold"
-          >
-            Abrir WebApp
-          </Link>
+          <div className="flex items-center gap-3">
+            {status === 'authenticated' ? (
+              <>
+                <Link
+                  href="/dashboard"
+                  className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-2 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-colors font-semibold"
+                >
+                  <LayoutDashboard className="w-4 h-4" />
+                  Dashboard
+                </Link>
+              </>
+            ) : (
+              <>
+                <Link
+                  href="/auth/signin"
+                  className="hidden sm:inline-flex items-center gap-2 text-gray-700 hover:text-blue-600 font-medium"
+                >
+                  <LogIn className="w-4 h-4" />
+                  Iniciar Sesión
+                </Link>
+                <Link
+                  href="/auth/signup"
+                  className="inline-flex items-center gap-2 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors font-semibold"
+                >
+                  <UserPlus className="w-4 h-4" />
+                  Registrarse
+                </Link>
+              </>
+            )}
+          </div>
         </nav>
       </header>
 
@@ -214,9 +243,12 @@ export default function HomePage() {
                 </li>
               </ul>
 
-              <button className="block w-full bg-white text-blue-600 text-center px-6 py-3 rounded-lg hover:bg-blue-50 transition-colors font-semibold">
-                Próximamente
-              </button>
+              <Link
+                href="/auth/signup"
+                className="block w-full bg-white text-blue-600 text-center px-6 py-3 rounded-lg hover:bg-blue-50 transition-colors font-semibold"
+              >
+                Crear Cuenta Premium
+              </Link>
             </div>
           </div>
         </div>
