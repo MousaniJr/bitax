@@ -1146,7 +1146,7 @@ export default function SpainCalculatorPremium({ isPremium = false, onSave }: Pr
                     className="flex items-center space-x-2 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
                   >
                     <Save className="h-4 w-4" />
-                    <span>Guardar</span>
+                    <span>Guardar Cálculos</span>
                   </button>
                 )}
               </div>

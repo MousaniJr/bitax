@@ -37,7 +37,7 @@
 
 ### Esencial para activar Premium:
 1. ❌ Páginas de registro y login
-2. ❌ Botones "Guardar declaración" en calculadoras
+2. ❌ Botones "Guardar cálculos" en calculadoras
 3. ❌ API routes para guardar/cargar datos
 4. ❌ Dashboard de usuario
 5. ❌ Integración Stripe (checkout + webhooks)

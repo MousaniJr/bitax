@@ -246,7 +246,7 @@ export default function SubscriptionPage() {
           <ul className="space-y-3 text-sm">
             <li className="flex items-start gap-2">
               <Check className="w-5 h-5 text-green-600 flex-shrink-0" />
-              <span className="text-gray-700">Guardar declaraciones ilimitadas</span>
+              <span className="text-gray-700">Guardar cálculos ilimitados</span>
             </li>
             <li className="flex items-start gap-2">
               <Check className="w-5 h-5 text-green-600 flex-shrink-0" />

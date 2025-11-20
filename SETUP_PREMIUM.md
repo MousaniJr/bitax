@@ -186,7 +186,7 @@ El esquema incluye:
 ### Modo Premium (39€/año)
 - ✅ Todo del modo gratuito
 - ✅ Cuenta de usuario
-- ✅ Guardar declaraciones
+- ✅ Guardar cálculos
 - ✅ Historial año tras año
 - ✅ Comparación entre años
 - ✅ Exportar a PDF

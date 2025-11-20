@@ -747,7 +747,7 @@ export default function GibraltarCalculatorPremium({ onSave, isPremium = true }:
                     className="w-full bg-gradient-to-r from-yellow-500 to-yellow-600 text-white py-3 px-6 rounded-lg font-semibold hover:from-yellow-600 hover:to-yellow-700 transition disabled:opacity-50 flex items-center justify-center gap-2"
                   >
                     <Save className="w-5 h-5" />
-                    {isSaving ? 'Guardando...' : 'Guardar Declaración'}
+                    {isSaving ? 'Guardando...' : 'Guardar Cálculos'}
                   </button>
                 </div>
               )}
