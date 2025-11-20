@@ -30,7 +30,7 @@ export async function POST(req: Request) {
 
     if (!isPremium) {
       return NextResponse.json(
-        { error: 'Se requiere suscripción Premium para guardar declaraciones' },
+        { error: 'Se requiere suscripción Premium para guardar cálculos' },
         { status: 403 }
       )
     }
