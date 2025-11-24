@@ -256,9 +256,16 @@ export function calculateSpainTax(data: SpainData): SpainResult {
 
   // 11. CRÉDITO POR DOBLE IMPOSICIÓN (Gibraltar)
   // Artículo 80 Ley IRPF - Convenio España-Gibraltar
+  // CASILLA MODELO 100: 0588
+  //
+  // ⚠️ IMPORTANTE: Este NO es el mismo concepto que "retenciones"
+  // - Este es el impuesto PAGADO EN GIBRALTAR
+  // - Se aplica como deducción por doble imposición ANTES que las retenciones
+  // - Solo aplica si trabajaste en Gibraltar (incomeGibraltar > 0)
+  //
   // El crédito es el menor entre:
-  // a) Impuesto efectivamente pagado en Gibraltar
-  // b) Impuesto que correspondería en España por esas rentas
+  // a) Impuesto efectivamente pagado en Gibraltar (gibraltarTaxPaid)
+  // b) Impuesto que correspondería en España por esas rentas (proporción)
   const gibraltarProportion = grossIncome > 0 ? incomeGibraltar / grossIncome : 0
   const theoreticalSpainTaxOnGibraltarIncome = totalTax * gibraltarProportion
   const actualGibraltarTax = gibraltarTaxPaid || 0
@@ -267,7 +274,25 @@ export function calculateSpainTax(data: SpainData): SpainResult {
   const doubleTaxationRelief = Math.min(theoreticalSpainTaxOnGibraltarIncome, actualGibraltarTax)
 
   // 12. CUOTA DIFERENCIAL (Resultado final)
-  // Cuota líquida - Deducciones - Crédito doble imposición - Retenciones
+  // ORDEN OFICIAL según Modelo 100 - Ejercicio 2024:
+  //
+  // 1. Cuota líquida (totalTax)
+  // 2. - Deducciones (totalDeductions) [vivienda, maternidad, etc.]
+  // 3. = Cuota resultante de la autoliquidación
+  // 4. - Deducción doble imposición (doubleTaxationRelief) [CASILLA 0588] ← Gibraltar AQUÍ
+  // 5. = Cuota después doble imposición
+  // 6. - Retenciones y pagos a cuenta (retentions) [CASILLA 0597] ← Retenciones IRPF España AQUÍ
+  // 7. = Resultado final (a pagar o a devolver) [CASILLA 0610]
+  //
+  // ⚠️ CRÍTICO: El orden NO es intercambiable
+  // - Gibraltar se aplica ANTES que las retenciones
+  // - "retentions" = SOLO retenciones IRPF practicadas en ESPAÑA
+  // - "gibraltarTaxPaid" ya se usó arriba para calcular doubleTaxationRelief
+  //
+  // CASOS DE USO:
+  // - Trabajador solo España: retentions > 0, gibraltarTaxPaid = 0
+  // - Trabajador solo Gibraltar: retentions = 0, gibraltarTaxPaid > 0
+  // - Trabajador ambos países: retentions > 0, gibraltarTaxPaid > 0
   const finalTax = Math.max(0, totalTax - totalDeductions - doubleTaxationRelief - retentions)
 
   // 13. TIPO EFECTIVO GLOBAL

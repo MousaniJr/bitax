@@ -356,14 +356,23 @@ export default function SpainCalculatorPremium({ isPremium = false, onSave }: Pr
 
             {/* Double taxation notice */}
             {(incomeSource === 'gibraltar' || incomeSource === 'both') && (
-              <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4">
+              <div className="bg-blue-50 border-l-4 border-blue-400 p-4">
                 <div className="flex">
-                  <AlertCircle className="h-5 w-5 text-yellow-400 flex-shrink-0 mt-0.5" />
+                  <AlertCircle className="h-5 w-5 text-blue-400 flex-shrink-0 mt-0.5" />
                   <div className="ml-3">
-                    <p className="text-sm text-yellow-700">
-                      <strong>Convenio de doble imposición:</strong> Los impuestos pagados en Gibraltar
-                      se descuentan de tu declaración española para evitar doble tributación.
+                    <p className="text-sm text-blue-700 mb-2">
+                      <strong>Convenio de doble imposición España-Gibraltar:</strong>
                     </p>
+                    <p className="text-sm text-blue-700">
+                      ✓ El impuesto pagado en Gibraltar se aplica como <strong>deducción por doble imposición</strong> (Casilla 0588 del Modelo 100)<br/>
+                      ✓ Se resta ANTES que las retenciones IRPF españolas<br/>
+                      ✓ Esto evita que pagues impuestos dos veces por los mismos ingresos
+                    </p>
+                    {incomeSource === 'both' && (
+                      <p className="text-sm text-blue-700 mt-2">
+                        <strong>Nota:</strong> Las retenciones IRPF de tu trabajo en España se aplican por separado (Casilla 0597)
+                      </p>
+                    )}
                   </div>
                 </div>
               </div>
@@ -438,6 +447,9 @@ export default function SpainCalculatorPremium({ isPremium = false, onSave }: Pr
                           className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                           placeholder="Ej: 4200"
                         />
+                        <p className="text-xs text-gray-500 mt-1">
+                          Total impuesto Gibraltar del año fiscal (se aplica como deducción por doble imposición)
+                        </p>
                       </div>
 
                       <div>
