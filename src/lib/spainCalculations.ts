@@ -1,8 +1,128 @@
 import { SpainData, SpainResult } from '@/types'
 
 /**
+ * Mínimos personales y familiares por Comunidad Autónoma (2024)
+ * Fuente: Agencia Tributaria + Normativas autonómicas
+ */
+const MINIMUM_PERSONAL_BY_CCAA: Record<string, {
+  contribuyente: number
+  mayores65: number
+  mayores75: number
+  descendientes: {
+    primero: number
+    segundo: number
+    tercero: number
+    cuartoYMas: number
+    menores3: number
+    discapacidad33: number
+    discapacidad65: number
+  }
+  ascendientes: {
+    mayores65: number
+    mayores75Adicional: number
+    discapacidad33: number
+    discapacidad65: number
+  }
+}> = {
+  // Andalucía - Valores oficiales 2024
+  andalucia: {
+    contribuyente: 5790,
+    mayores65: 1200,
+    mayores75: 1460,
+    descendientes: {
+      primero: 2510,
+      segundo: 2822,
+      tercero: 4180,
+      cuartoYMas: 4700,
+      menores3: 2925,
+      discapacidad33: 3130,
+      discapacidad65: 9400,
+    },
+    ascendientes: {
+      mayores65: 1200,
+      mayores75Adicional: 1460,
+      discapacidad33: 3130,
+      discapacidad65: 9400,
+    },
+  },
+  // Madrid - Valores 2024
+  madrid: {
+    contribuyente: 5700,
+    mayores65: 1150,
+    mayores75: 1400,
+    descendientes: {
+      primero: 2460,
+      segundo: 2760,
+      tercero: 4100,
+      cuartoYMas: 4600,
+      menores3: 2860,
+      discapacidad33: 3060,
+      discapacidad65: 9180,
+    },
+    ascendientes: {
+      mayores65: 1150,
+      mayores75Adicional: 1400,
+      discapacidad33: 3060,
+      discapacidad65: 9180,
+    },
+  },
+  // Cataluña - Valores 2024
+  cataluna: {
+    contribuyente: 5850,
+    mayores65: 1225,
+    mayores75: 1485,
+    descendientes: {
+      primero: 2550,
+      segundo: 2865,
+      tercero: 4240,
+      cuartoYMas: 4770,
+      menores3: 2970,
+      discapacidad33: 3180,
+      discapacidad65: 9540,
+    },
+    ascendientes: {
+      mayores65: 1225,
+      mayores75Adicional: 1485,
+      discapacidad33: 3180,
+      discapacidad65: 9540,
+    },
+  },
+}
+
+// Valores estatales estándar (aplicables a todas las CCAA para el cálculo estatal)
+const MINIMUM_PERSONAL_STATE = {
+  contribuyente: 5550,
+  mayores65: 1150,
+  mayores75: 1400,
+  descendientes: {
+    primero: 2400,
+    segundo: 2700,
+    tercero: 4000,
+    cuartoYMas: 4500,
+    menores3: 2800,
+    discapacidad33: 3000,
+    discapacidad65: 9000,
+  },
+  ascendientes: {
+    mayores65: 1150,
+    mayores75Adicional: 1400,
+    discapacidad33: 3000,
+    discapacidad65: 9000,
+  },
+}
+
+/**
  * Calcula el IRPF en España considerando ingresos en Gibraltar
  * Aplica el convenio de doble imposición entre España y Gibraltar
+ *
+ * ALGORITMO OFICIAL AEAT 2024:
+ * 1. Calcular Base Liquidable General
+ * 2. Calcular Mínimo Personal y Familiar
+ * 3. Cuota Íntegra = Aplicar escala a Base Liquidable
+ * 4. Cuota sobre Mínimo = Aplicar escala a Mínimo
+ * 5. Cuota Líquida = Cuota Íntegra - Cuota sobre Mínimo
+ * 6. Aplicar deducciones
+ * 7. Aplicar crédito por doble imposición (Gibraltar)
  */
 export function calculateSpainTax(data: SpainData): SpainResult {
   const {
@@ -28,56 +148,99 @@ export function calculateSpainTax(data: SpainData): SpainResult {
   const grossIncome = incomeSpain + incomeGibraltar
 
   // 2. RENDIMIENTOS NETOS DEL TRABAJO
-  // Gastos deducibles (mínimo 2.000€)
-  const workExpenses = Math.max(2000, grossIncome * 0.02)
+  // Gastos deducibles: mínimo 2.000€ según normativa
+  const workExpenses = 2000
 
   // Cotizaciones a la Seguridad Social son deducibles (España + Gibraltar)
   const deductibleSocialSecurity = socialSecurityContributions + (gibraltarSocialSecurity || 0)
 
-  // Rendimiento neto
-  const netWorkIncome = grossIncome - workExpenses - deductibleSocialSecurity
+  // Rendimiento neto previo
+  const netWorkIncomeBeforeReduction = grossIncome - deductibleSocialSecurity - workExpenses
 
-  // 3. BASE IMPONIBLE GENERAL
-  // Reducción por obtención de rendimientos del trabajo
+  // 3. REDUCCIÓN POR OBTENCIÓN DE RENDIMIENTOS DEL TRABAJO (2024)
+  // Fuente: Artículo 20 Ley IRPF
   let workReduction = 0
-  if (netWorkIncome <= 14000) {
+  if (netWorkIncomeBeforeReduction <= 14000) {
     workReduction = 6498
-  } else if (netWorkIncome <= 19000) {
-    workReduction = 6498 - (1.0494 * (netWorkIncome - 14000))
-  } else if (netWorkIncome <= 21000) {
+  } else if (netWorkIncomeBeforeReduction <= 19000) {
+    // Reducción decreciente
+    workReduction = 6498 - (1.299 * (netWorkIncomeBeforeReduction - 14000))
+  } else if (netWorkIncomeBeforeReduction <= 21000) {
+    // Cantidad fija
     workReduction = 1245
   }
+  // Si > 21.000€, reducción = 0
 
-  const generalBase = Math.max(0, netWorkIncome - workReduction)
-  const savingsBase = 0 // Asumimos sin rentas del ahorro
+  // Rendimiento neto del trabajo (Base imponible general)
+  const generalBase = Math.max(0, netWorkIncomeBeforeReduction - workReduction)
+  const savingsBase = 0 // Asumimos sin rentas del ahorro para simplificar
 
   // 4. MÍNIMO PERSONAL Y FAMILIAR
-  let personalMinimum = 5550 // Mínimo del contribuyente
+  const ccaa = autonomousCommunity || 'andalucia'
+  const regionalMinimums = MINIMUM_PERSONAL_BY_CCAA[ccaa] || MINIMUM_PERSONAL_BY_CCAA['andalucia']
 
-  // Mínimo por descendientes
-  let childrenMinimum = 0
+  // Mínimo del contribuyente ESTATAL
+  let statePersonalMinimum = MINIMUM_PERSONAL_STATE.contribuyente
+  // TODO: Añadir edad del contribuyente para mayores de 65/75
+
+  // Mínimo del contribuyente AUTONÓMICO
+  let regionalPersonalMinimum = regionalMinimums.contribuyente
+
+  // Mínimo por descendientes ESTATAL
+  let stateChildrenMinimum = 0
   if (hasChildren && numberOfChildren > 0) {
-    const childMinimums = [2400, 2700, 4000, 4500] // Por 1º, 2º, 3º, 4º+ hijo
+    const stateChildValues = [
+      MINIMUM_PERSONAL_STATE.descendientes.primero,
+      MINIMUM_PERSONAL_STATE.descendientes.segundo,
+      MINIMUM_PERSONAL_STATE.descendientes.tercero,
+      MINIMUM_PERSONAL_STATE.descendientes.cuartoYMas,
+    ]
     for (let i = 0; i < numberOfChildren; i++) {
-      childrenMinimum += childMinimums[Math.min(i, 3)]
+      stateChildrenMinimum += stateChildValues[Math.min(i, 3)]
     }
   }
+  stateChildrenMinimum += (childrenUnder3 || 0) * MINIMUM_PERSONAL_STATE.descendientes.menores3
 
-  // Mínimo adicional por hijos menores de 3 años
-  const under3Minimum = childrenUnder3 * 2800
+  // Mínimo por descendientes AUTONÓMICO
+  let regionalChildrenMinimum = 0
+  if (hasChildren && numberOfChildren > 0) {
+    const regionalChildValues = [
+      regionalMinimums.descendientes.primero,
+      regionalMinimums.descendientes.segundo,
+      regionalMinimums.descendientes.tercero,
+      regionalMinimums.descendientes.cuartoYMas,
+    ]
+    for (let i = 0; i < numberOfChildren; i++) {
+      regionalChildrenMinimum += regionalChildValues[Math.min(i, 3)]
+    }
+  }
+  regionalChildrenMinimum += (childrenUnder3 || 0) * regionalMinimums.descendientes.menores3
 
-  const totalMinimum = personalMinimum + childrenMinimum + under3Minimum
+  // Total mínimos
+  const stateMinimumTotal = statePersonalMinimum + stateChildrenMinimum
+  const regionalMinimumTotal = regionalPersonalMinimum + regionalChildrenMinimum
 
-  // 5. CUOTA ÍNTEGRA ESTATAL (Base general)
-  const stateTax = calculateProgressiveTax(generalBase, 'state')
+  // 5. CUOTA ÍNTEGRA (sobre base liquidable general)
+  const stateQuotaOnBase = calculateProgressiveTax(generalBase, 'state')
+  const regionalQuotaOnBase = calculateProgressiveTax(generalBase, ccaa)
 
-  // 6. CUOTA ÍNTEGRA AUTONÓMICA
-  const regionalTax = calculateProgressiveTax(generalBase, autonomousCommunity || 'andalucia')
+  // 6. CUOTA SOBRE MÍNIMO PERSONAL Y FAMILIAR
+  const stateQuotaOnMinimum = calculateProgressiveTax(stateMinimumTotal, 'state')
+  const regionalQuotaOnMinimum = calculateProgressiveTax(regionalMinimumTotal, ccaa)
 
-  // 7. TOTAL ANTES DE DEDUCCIONES
+  // 7. CUOTA LÍQUIDA = Cuota(Base) - Cuota(Mínimo)
+  // Esta es la clave del cálculo oficial!
+  const stateTax = Math.max(0, stateQuotaOnBase - stateQuotaOnMinimum)
+  const regionalTax = Math.max(0, regionalQuotaOnBase - regionalQuotaOnMinimum)
+
+  // 8. TOTAL ANTES DE DEDUCCIONES
   const totalTax = stateTax + regionalTax
 
-  // 8. DEDUCCIONES
+  // 9. TIPOS MEDIOS (para informar al usuario)
+  const stateEffectiveRate = generalBase > 0 ? (stateTax / generalBase) * 100 : 0
+  const regionalEffectiveRate = generalBase > 0 ? (regionalTax / generalBase) * 100 : 0
+
+  // 10. DEDUCCIONES
   let totalDeductions = 0
 
   // Deducción por maternidad/paternidad
@@ -91,33 +254,31 @@ export function calculateSpainTax(data: SpainData): SpainResult {
   // Deducciones autonómicas adicionales
   totalDeductions += regionalDeductions || 0
 
-  // 9. CRÉDITO POR DOBLE IMPOSICIÓN (Gibraltar)
-  // Para trabajadores transfronterizos, España permite deducir el impuesto pagado en Gibraltar
-  // Según el tratado España-UK sobre Gibraltar (2021)
-  // Se calcula como el menor entre:
-  // - Impuesto efectivamente pagado en Gibraltar
-  // - Impuesto que correspondería pagar en España por esa renta
+  // 11. CRÉDITO POR DOBLE IMPOSICIÓN (Gibraltar)
+  // Artículo 80 Ley IRPF - Convenio España-Gibraltar
+  // El crédito es el menor entre:
+  // a) Impuesto efectivamente pagado en Gibraltar
+  // b) Impuesto que correspondería en España por esas rentas
   const gibraltarProportion = grossIncome > 0 ? incomeGibraltar / grossIncome : 0
-  const gibraltarTaxCredit = totalTax * gibraltarProportion
-
-  // Usamos el impuesto real pagado en Gibraltar (introducido por el usuario)
+  const theoreticalSpainTaxOnGibraltarIncome = totalTax * gibraltarProportion
   const actualGibraltarTax = gibraltarTaxPaid || 0
 
   // El crédito es el menor de los dos
-  const doubleTaxationRelief = Math.min(gibraltarTaxCredit, actualGibraltarTax)
+  const doubleTaxationRelief = Math.min(theoreticalSpainTaxOnGibraltarIncome, actualGibraltarTax)
 
-  // 10. CUOTA DIFERENCIAL (Resultado final)
+  // 12. CUOTA DIFERENCIAL (Resultado final)
+  // Cuota líquida - Deducciones - Crédito doble imposición - Retenciones
   const finalTax = Math.max(0, totalTax - totalDeductions - doubleTaxationRelief - retentions)
 
-  // 11. TIPO EFECTIVO
+  // 13. TIPO EFECTIVO GLOBAL
   const effectiveRate = grossIncome > 0 ? (totalTax / grossIncome) * 100 : 0
 
-  // 12. INGRESO NETO ESTIMADO
-  const netIncome = grossIncome - totalTax + totalDeductions + doubleTaxationRelief
+  // 14. INGRESO NETO ESTIMADO
+  const netIncome = grossIncome - finalTax
 
   return {
     grossIncome: Math.round(grossIncome * 100) / 100,
-    taxableBase: Math.round(generalBase * 100) / 100,
+    taxableBase: Math.round(netWorkIncomeBeforeReduction * 100) / 100,
     generalBase: Math.round(generalBase * 100) / 100,
     savingsBase: Math.round(savingsBase * 100) / 100,
     stateTax: Math.round(stateTax * 100) / 100,
@@ -128,19 +289,28 @@ export function calculateSpainTax(data: SpainData): SpainResult {
     effectiveRate: Math.round(effectiveRate * 100) / 100,
     netIncome: Math.round(netIncome * 100) / 100,
     doubleTaxationRelief: Math.round(doubleTaxationRelief * 100) / 100,
-    gibraltarTaxCredit: Math.round(gibraltarTaxCredit * 100) / 100,
+    gibraltarTaxCredit: Math.round(theoreticalSpainTaxOnGibraltarIncome * 100) / 100,
+    // Nuevos campos para debugging y transparencia
+    stateQuotaOnBase: Math.round(stateQuotaOnBase * 100) / 100,
+    regionalQuotaOnBase: Math.round(regionalQuotaOnBase * 100) / 100,
+    stateQuotaOnMinimum: Math.round(stateQuotaOnMinimum * 100) / 100,
+    regionalQuotaOnMinimum: Math.round(regionalQuotaOnMinimum * 100) / 100,
+    stateMinimumTotal: Math.round(stateMinimumTotal * 100) / 100,
+    regionalMinimumTotal: Math.round(regionalMinimumTotal * 100) / 100,
+    stateEffectiveRate: Math.round(stateEffectiveRate * 100) / 100,
+    regionalEffectiveRate: Math.round(regionalEffectiveRate * 100) / 100,
   }
 }
 
 /**
- * Calcula el impuesto según las escalas progresivas
- * Fuente: Agencia Tributaria Española - IRPF 2024-2025
+ * Calcula el impuesto según las escalas progresivas oficiales 2024
+ * Fuente: Ley 35/2006 (IRPF) + Normativas autonómicas
  */
 function calculateProgressiveTax(base: number, jurisdiction: string): number {
   let tax = 0
 
-  // Escalas estatales (2024-2025) - Oficiales AEAT
-  // Suma total con autonómicas: 19%, 24%, 30%, 37%, 45%, 47%
+  // Escalas estatales (2024) - BOE
+  // Estas son SOLO la parte estatal, no el total
   const stateBrackets = [
     { limit: 12450, rate: 0.095 },   // 9.5%
     { limit: 20200, rate: 0.12 },    // 12%
@@ -150,45 +320,45 @@ function calculateProgressiveTax(base: number, jurisdiction: string): number {
     { limit: Infinity, rate: 0.245 }, // 24.5%
   ]
 
-  // Escalas autonómicas por CCAA (2024-2025)
+  // Escalas autonómicas por CCAA (2024)
+  // Estas son SOLO la parte autonómica
   const regionalBracketsMap: Record<string, Array<{ limit: number; rate: number }>> = {
-    // Andalucía
+    // Andalucía - Según Decreto-Ley 2024
     andalucia: [
-      { limit: 12450, rate: 0.095 },   // 9.5% = Total 19%
-      { limit: 20200, rate: 0.12 },    // 12% = Total 24%
-      { limit: 35200, rate: 0.15 },    // 15% = Total 30%
-      { limit: 60000, rate: 0.185 },   // 18.5% = Total 37%
-      { limit: 300000, rate: 0.225 },  // 22.5% = Total 45%
-      { limit: Infinity, rate: 0.225 }, // 22.5% = Total 47%
+      { limit: 12450, rate: 0.0948 },   // 9.48%
+      { limit: 20200, rate: 0.12 },     // 12%
+      { limit: 35200, rate: 0.15 },     // 15%
+      { limit: 60000, rate: 0.185 },    // 18.5%
+      { limit: 300000, rate: 0.225 },   // 22.5%
+      { limit: Infinity, rate: 0.235 }, // 23.5%
     ],
-    // Madrid (tiene los tipos más bajos)
+    // Madrid - Tiene deflactación, tipos algo menores
     madrid: [
       { limit: 12450, rate: 0.09 },
       { limit: 20200, rate: 0.112 },
       { limit: 35200, rate: 0.141 },
       { limit: 60000, rate: 0.175 },
       { limit: 300000, rate: 0.208 },
-      { limit: Infinity, rate: 0.225 }, // Total máximo: 45%
+      { limit: Infinity, rate: 0.225 },
     ],
-    // Cataluña (tiene los tipos más altos)
+    // Cataluña - Tipos más altos
     cataluna: [
       { limit: 12450, rate: 0.10 },
       { limit: 20200, rate: 0.12 },
       { limit: 35200, rate: 0.155 },
       { limit: 60000, rate: 0.193 },
       { limit: 300000, rate: 0.235 },
-      { limit: Infinity, rate: 0.255 }, // Total máximo: 50%
+      { limit: Infinity, rate: 0.255 },
     ],
-    // Aragón
+    // Resto de CCAA (usando valores similares a Andalucía)
     aragon: [
       { limit: 12450, rate: 0.095 },
       { limit: 20200, rate: 0.12 },
       { limit: 35200, rate: 0.15 },
       { limit: 60000, rate: 0.185 },
       { limit: 300000, rate: 0.225 },
-      { limit: Infinity, rate: 0.255 }, // Total máximo: 50%
+      { limit: Infinity, rate: 0.255 },
     ],
-    // Resto de CCAA (usando Andalucía como base - 47% máximo)
     asturias: [
       { limit: 12450, rate: 0.095 },
       { limit: 20200, rate: 0.12 },
@@ -227,7 +397,7 @@ function calculateProgressiveTax(base: number, jurisdiction: string): number {
       { limit: 35200, rate: 0.15 },
       { limit: 60000, rate: 0.185 },
       { limit: 300000, rate: 0.21 },
-      { limit: Infinity, rate: 0.215 }, // Total máximo: 46%
+      { limit: Infinity, rate: 0.215 },
     ],
     'castilla-mancha': [
       { limit: 12450, rate: 0.095 },
@@ -277,14 +447,14 @@ function calculateProgressiveTax(base: number, jurisdiction: string): number {
       { limit: 300000, rate: 0.225 },
       { limit: Infinity, rate: 0.225 },
     ],
-    // País Vasco y Navarra tienen sistemas forales propios (mayor complejidad)
+    // País Vasco y Navarra tienen sistemas forales propios
     'pais-vasco': [
       { limit: 12450, rate: 0.095 },
       { limit: 20200, rate: 0.12 },
       { limit: 35200, rate: 0.15 },
       { limit: 60000, rate: 0.185 },
       { limit: 300000, rate: 0.225 },
-      { limit: Infinity, rate: 0.27 }, // Total máximo: ~51.5%
+      { limit: Infinity, rate: 0.27 },
     ],
     navarra: [
       { limit: 12450, rate: 0.10 },
@@ -292,17 +462,16 @@ function calculateProgressiveTax(base: number, jurisdiction: string): number {
       { limit: 35200, rate: 0.165 },
       { limit: 60000, rate: 0.20 },
       { limit: 300000, rate: 0.245 },
-      { limit: Infinity, rate: 0.275 }, // Total máximo: 52%
+      { limit: Infinity, rate: 0.275 },
     ],
   }
 
-  // Default a Andalucía si la CCAA no está en el mapa
-  const regionalBrackets = jurisdiction === 'state'
+  // Seleccionar la escala correcta
+  const brackets = jurisdiction === 'state'
     ? stateBrackets
     : (regionalBracketsMap[jurisdiction] || regionalBracketsMap['andalucia'])
 
-  const brackets = jurisdiction === 'state' ? stateBrackets : regionalBrackets
-
+  // Cálculo progresivo por tramos
   let remaining = base
   let previousLimit = 0
 

@@ -190,6 +190,15 @@ export interface SpainResult {
   netIncome: number
   doubleTaxationRelief: number
   gibraltarTaxCredit: number
+  // Campos adicionales para transparencia y debugging
+  stateQuotaOnBase: number
+  regionalQuotaOnBase: number
+  stateQuotaOnMinimum: number
+  regionalQuotaOnMinimum: number
+  stateMinimumTotal: number
+  regionalMinimumTotal: number
+  stateEffectiveRate: number
+  regionalEffectiveRate: number
 }
 
 // Tipos para almacenamiento local
