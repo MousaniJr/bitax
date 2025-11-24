@@ -33,6 +33,7 @@ export default function SpainCalculatorPremium({ isPremium = false, onSave }: Pr
     maritalStatus: 'single',
     hasChildren: false,
     numberOfChildren: 0,
+    shareChildrenMinimumWithSpouse: false,
     childrenUnder3: 0,
     hasDisabledDependents: false,
     hasMortgage: false,
@@ -831,6 +832,29 @@ export default function SpainCalculatorPremium({ isPremium = false, onSave }: Pr
                         />
                         <p className="text-xs text-gray-500 mt-1">+9.000€ por cada uno</p>
                       </div>
+
+                      {/* Tributación individual con reparto de hijos */}
+                      {data.minimos.descendientes.menores25 > 0 && (
+                        <div className="border-t border-gray-200 pt-3 mt-3">
+                          <label className="flex items-start space-x-2 cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={data.shareChildrenMinimumWithSpouse || false}
+                              onChange={(e) => handleInputChange('shareChildrenMinimumWithSpouse', e.target.checked)}
+                              className="mt-1 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                            />
+                            <div>
+                              <span className="text-sm text-gray-700 font-medium">
+                                Comparto el mínimo por hijos con mi cónyuge (50%)
+                              </span>
+                              <p className="text-xs text-gray-500 mt-1">
+                                Marca esta casilla si estás casado/a, hacéis declaraciones individuales,
+                                y compartís el mínimo por descendientes. Cada uno aplicará el 50% del mínimo.
+                              </p>
+                            </div>
+                          </label>
+                        </div>
+                      )}
                     </div>
                   </div>
 

@@ -134,6 +134,7 @@ export function calculateSpainTax(data: SpainData): SpainResult {
     maritalStatus,
     hasChildren,
     numberOfChildren,
+    shareChildrenMinimumWithSpouse,
     childrenUnder3,
     hasMortgage,
     mortgageAmount,
@@ -215,6 +216,14 @@ export function calculateSpainTax(data: SpainData): SpainResult {
     }
   }
   regionalChildrenMinimum += (childrenUnder3 || 0) * regionalMinimums.descendientes.menores3
+
+  // Ajuste por tributación individual en matrimonio con reparto de hijos
+  // Cuando ambos cónyuges hacen declaración individual y comparten el mínimo por hijos,
+  // cada uno aplica el 50% del mínimo por descendientes
+  if (shareChildrenMinimumWithSpouse) {
+    stateChildrenMinimum = stateChildrenMinimum * 0.5
+    regionalChildrenMinimum = regionalChildrenMinimum * 0.5
+  }
 
   // Total mínimos
   const stateMinimumTotal = statePersonalMinimum + stateChildrenMinimum
