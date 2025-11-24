@@ -94,6 +94,7 @@ export interface SpainData {
   maritalStatus: 'single' | 'married' | 'divorced' | 'widowed'
   hasChildren: boolean
   numberOfChildren: number
+  shareChildrenMinimumWithSpouse?: boolean // Tributación individual: aplicar 50% del mínimo por hijos
   childrenUnder3: number
   hasDisabledDependents: boolean
   hasMortgage: boolean
