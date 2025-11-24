@@ -19,6 +19,7 @@ export default function SpainCalculator() {
     maritalStatus: 'single',
     hasChildren: false,
     numberOfChildren: 0,
+    shareChildrenMinimumWithSpouse: false,
     childrenUnder3: 0,
     hasDisabledDependents: false,
     hasMortgage: false,
@@ -70,6 +71,38 @@ export default function SpainCalculator() {
         <p className="text-gray-600 mb-6">
           Calcula tu declaración de la renta en España. Versión simplificada para cálculo rápido.
         </p>
+
+        {/* Alerta de limitaciones versión gratis */}
+        <div className="bg-amber-50 border-l-4 border-amber-500 p-4 mb-6">
+          <div className="flex">
+            <AlertCircle className="h-5 w-5 text-amber-500 flex-shrink-0 mt-0.5" />
+            <div className="ml-3">
+              <h4 className="text-sm font-semibold text-amber-800 mb-1">
+                Calculadora Básica - Limitaciones
+              </h4>
+              <p className="text-sm text-amber-700 mb-2">
+                Esta versión <strong>gratuita</strong> calcula el IRPF para el caso más simple:
+                <strong> persona soltera sin hijos ni deducciones adicionales</strong>.
+              </p>
+              <p className="text-sm text-amber-700 mb-2">
+                <strong>NO incluye:</strong>
+              </p>
+              <ul className="text-sm text-amber-700 list-disc list-inside ml-2 space-y-1">
+                <li>Deducciones por hijos y descendientes</li>
+                <li>Mínimos familiares (cónyuge, ascendientes)</li>
+                <li>Deducciones por vivienda habitual</li>
+                <li>Deducciones por maternidad/paternidad</li>
+                <li>Deducciones autonómicas específicas</li>
+                <li>Tributación individual/conjunta en matrimonio</li>
+                <li>Guardar cálculos ilimitados</li>
+              </ul>
+              <p className="text-sm text-amber-700 mt-3">
+                💎 <strong>¿Tienes hijos o situación familiar compleja?</strong> Usa la versión <strong>Premium</strong> para
+                un cálculo preciso con todas las deducciones oficiales.
+              </p>
+            </div>
+          </div>
+        </div>
 
         {/* Selector de origen de ingresos */}
         {!incomeSource && (
