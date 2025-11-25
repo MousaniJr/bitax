@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { SpainData, SpainResult } from '@/types'
 import { calculateSpainTax } from '@/lib/spainCalculations'
+import { formatNumber, parseFormattedNumber } from '@/lib/numberFormat'
 import { Calculator, FileText, AlertCircle, MapPin } from 'lucide-react'
 
 type IncomeSource = 'gibraltar' | 'spain' | 'both'
@@ -215,11 +216,13 @@ export default function SpainCalculator() {
                     Ingresos anuales en España (€) *
                   </label>
                   <input
-                    type="number"
-                    value={data.incomeSpain || ''}
-                    onChange={(e) => handleInputChange('incomeSpain', parseFloat(e.target.value) || 0)}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="Ej: 25000"
+                    type="text"
+                    inputMode="numeric"
+                    value={data.incomeSpain ? formatNumber(data.incomeSpain) : ''}
+                    onChange={(e) => handleInputChange('incomeSpain', parseFormattedNumber(e.target.value))}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
+                    style={{ WebkitTextFillColor: '#111827' }}
+                    placeholder="Ej: 25.000"
                   />
                 </div>
               )}
@@ -232,11 +235,13 @@ export default function SpainCalculator() {
                       Ingresos anuales en Gibraltar (€) *
                     </label>
                     <input
-                      type="number"
-                      value={data.incomeGibraltar || ''}
-                      onChange={(e) => handleInputChange('incomeGibraltar', parseFloat(e.target.value) || 0)}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder="Ej: 35000"
+                      type="text"
+                      inputMode="numeric"
+                      value={data.incomeGibraltar ? formatNumber(data.incomeGibraltar) : ''}
+                      onChange={(e) => handleInputChange('incomeGibraltar', parseFormattedNumber(e.target.value))}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
+                      style={{ WebkitTextFillColor: '#111827' }}
+                      placeholder="Ej: 35.000"
                     />
                     <p className="text-xs text-gray-500 mt-1">
                       Convertir libras a euros al tipo de cambio medio anual
@@ -249,11 +254,13 @@ export default function SpainCalculator() {
                       Cotizaciones Seguridad Social Gibraltar (€)
                     </label>
                     <input
-                      type="number"
-                      value={data.gibraltarSocialSecurity || ''}
-                      onChange={(e) => handleInputChange('gibraltarSocialSecurity', parseFloat(e.target.value) || 0)}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder="Ej: 2500"
+                      type="text"
+                      inputMode="numeric"
+                      value={data.gibraltarSocialSecurity ? formatNumber(data.gibraltarSocialSecurity) : ''}
+                      onChange={(e) => handleInputChange('gibraltarSocialSecurity', parseFormattedNumber(e.target.value))}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
+                      style={{ WebkitTextFillColor: '#111827' }}
+                      placeholder="Ej: 2.500"
                     />
                     <p className="text-xs text-gray-500 mt-1">
                       Cotizaciones pagadas a la Seguridad Social en Gibraltar
@@ -266,11 +273,13 @@ export default function SpainCalculator() {
                       Impuesto pagado en Gibraltar (€) *
                     </label>
                     <input
-                      type="number"
-                      value={data.gibraltarTaxPaid || ''}
-                      onChange={(e) => handleInputChange('gibraltarTaxPaid', parseFloat(e.target.value) || 0)}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder="Ej: 4200"
+                      type="text"
+                      inputMode="numeric"
+                      value={data.gibraltarTaxPaid ? formatNumber(data.gibraltarTaxPaid) : ''}
+                      onChange={(e) => handleInputChange('gibraltarTaxPaid', parseFormattedNumber(e.target.value))}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
+                      style={{ WebkitTextFillColor: '#111827' }}
+                      placeholder="Ej: 4.200"
                     />
                     <p className="text-xs text-gray-500 mt-1">
                       Introduce el impuesto (Income Tax) que pagaste en Gibraltar según tu certificado fiscal.
@@ -317,11 +326,13 @@ export default function SpainCalculator() {
                     Cotizaciones a la Seguridad Social (€)
                   </label>
                   <input
-                    type="number"
-                    value={data.socialSecurityContributions || ''}
-                    onChange={(e) => handleInputChange('socialSecurityContributions', parseFloat(e.target.value) || 0)}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="Ej: 3000"
+                    type="text"
+                    inputMode="numeric"
+                    value={data.socialSecurityContributions ? formatNumber(data.socialSecurityContributions) : ''}
+                    onChange={(e) => handleInputChange('socialSecurityContributions', parseFormattedNumber(e.target.value))}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
+                    style={{ WebkitTextFillColor: '#111827' }}
+                    placeholder="Ej: 3.000"
                   />
                   <p className="text-xs text-gray-500 mt-1">
                     Cotizaciones deducibles de tu base imponible
@@ -336,11 +347,13 @@ export default function SpainCalculator() {
                     Retenciones practicadas (€)
                   </label>
                   <input
-                    type="number"
-                    value={data.retentions || ''}
-                    onChange={(e) => handleInputChange('retentions', parseFloat(e.target.value) || 0)}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="Ej: 5000"
+                    type="text"
+                    inputMode="numeric"
+                    value={data.retentions ? formatNumber(data.retentions) : ''}
+                    onChange={(e) => handleInputChange('retentions', parseFormattedNumber(e.target.value))}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
+                    style={{ WebkitTextFillColor: '#111827' }}
+                    placeholder="Ej: 5.000"
                   />
                   <p className="text-xs text-gray-500 mt-1">
                     IRPF retenido en tus nóminas españolas

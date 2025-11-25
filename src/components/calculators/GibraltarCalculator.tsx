@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { GibraltarData, GibraltarResult } from '@/types'
 import { calculateGibraltarTax, PERSONAL_ALLOWANCE } from '@/lib/gibraltarCalculations'
 import { allowanceToTaxCode, taxCodeToAllowance, getTaxCodeRange } from '@/lib/taxCodeUtils'
+import { formatNumber, parseFormattedNumber } from '@/lib/numberFormat'
 import { Calculator, TrendingDown, TrendingUp, Info, FileText } from 'lucide-react'
 
 export default function GibraltarCalculator() {
@@ -129,11 +130,13 @@ export default function GibraltarCalculator() {
               Ingresos Anuales Brutos (£) *
             </label>
             <input
-              type="number"
-              value={data.annualIncome || ''}
-              onChange={(e) => setData((prev) => ({ ...prev, annualIncome: parseFloat(e.target.value) || 0 }))}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
-              placeholder="Ej: 45000"
+              type="text"
+              inputMode="numeric"
+              value={data.annualIncome ? formatNumber(data.annualIncome) : ''}
+              onChange={(e) => setData((prev) => ({ ...prev, annualIncome: parseFormattedNumber(e.target.value) }))}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent text-gray-900"
+              style={{ WebkitTextFillColor: '#111827' }}
+              placeholder="Ej: 45,000"
             />
           </div>
 
@@ -161,14 +164,15 @@ export default function GibraltarCalculator() {
                 Total Allowances (£) *
               </label>
               <input
-                type="number"
-                value={data.totalAllowances || ''}
-                onChange={(e) => handleAllowanceChange(parseFloat(e.target.value) || 0)}
+                type="text"
+                inputMode="numeric"
+                value={data.totalAllowances ? formatNumber(data.totalAllowances) : ''}
+                onChange={(e) => handleAllowanceChange(parseFormattedNumber(e.target.value))}
                 onFocus={() => setIsEditingAllowance(true)}
                 onBlur={handleAllowanceBlur}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                placeholder={`Mínimo: ${PERSONAL_ALLOWANCE}`}
-                min={PERSONAL_ALLOWANCE}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent text-gray-900"
+                style={{ WebkitTextFillColor: '#111827' }}
+                placeholder={`Mínimo: ${formatNumber(PERSONAL_ALLOWANCE)}`}
               />
               <p className="text-xs text-gray-500 mt-1">
                 Incluye: Personal + Spouse + Children + Mortgage + Otros
@@ -181,13 +185,13 @@ export default function GibraltarCalculator() {
                 Tax Code
               </label>
               <input
-                type="number"
+                type="text"
+                inputMode="numeric"
                 value={data.taxCode || ''}
-                onChange={(e) => handleTaxCodeChange(parseInt(e.target.value) || 1)}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                onChange={(e) => handleTaxCodeChange(parseInt(e.target.value.replace(/\D/g, '')) || 1)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent text-gray-900"
+                style={{ WebkitTextFillColor: '#111827' }}
                 placeholder="1-52"
-                min="1"
-                max="52"
               />
               <p className="text-xs text-gray-500 mt-1">
                 {taxCodeRange && (
