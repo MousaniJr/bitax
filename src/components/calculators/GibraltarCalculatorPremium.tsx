@@ -166,10 +166,11 @@ export default function GibraltarCalculatorPremium({ onSave, isPremium = true }:
             Ingresos Anuales Brutos (£) *
           </label>
           <input
-            type="number"
+            type="text"
+                    inputMode="numeric"
             value={annualIncome || ''}
             onChange={(e) => setAnnualIncome(parseFloat(e.target.value) || 0)}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent text-lg"
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent text-lg text-gray-900"
             placeholder="Ej: 45000"
           />
         </div>
@@ -216,12 +217,13 @@ export default function GibraltarCalculatorPremium({ onSave, isPremium = true }:
                 <label className="font-medium">Hijos (Child Allowance)</label>
                 <div className="text-sm text-gray-500 mb-2">£{ALLOWANCE_VALUES.child.toLocaleString()} por hijo</div>
                 <input
-                  type="number"
+                  type="text"
+                    inputMode="numeric"
                   min="0"
                   max="10"
                   value={allowances.numberOfChildren}
                   onChange={(e) => setAllowances(prev => ({ ...prev, numberOfChildren: parseInt(e.target.value) || 0 }))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900"
                 />
               </div>
 
@@ -230,12 +232,13 @@ export default function GibraltarCalculatorPremium({ onSave, isPremium = true }:
                 <label className="font-medium">Hijos Educados en el Extranjero</label>
                 <div className="text-sm text-gray-500 mb-2">£{ALLOWANCE_VALUES.childAbroad.toLocaleString()} por hijo</div>
                 <input
-                  type="number"
+                  type="text"
+                    inputMode="numeric"
                   min="0"
                   max="10"
                   value={allowances.childrenEducatedAbroad}
                   onChange={(e) => setAllowances(prev => ({ ...prev, childrenEducatedAbroad: parseInt(e.target.value) || 0 }))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900"
                 />
               </div>
 
@@ -272,12 +275,13 @@ export default function GibraltarCalculatorPremium({ onSave, isPremium = true }:
                 <label className="font-medium">Nursery School Allowance</label>
                 <div className="text-sm text-gray-500 mb-2">Hasta £{ALLOWANCE_VALUES.nurseryMax.toLocaleString()}</div>
                 <input
-                  type="number"
+                  type="text"
+                    inputMode="numeric"
                   min="0"
                   max={ALLOWANCE_VALUES.nurseryMax}
                   value={allowances.nurserySchool}
                   onChange={(e) => setAllowances(prev => ({ ...prev, nurserySchool: parseFloat(e.target.value) || 0 }))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900"
                   placeholder="0"
                 />
               </div>
@@ -287,12 +291,13 @@ export default function GibraltarCalculatorPremium({ onSave, isPremium = true }:
                 <label className="font-medium">Dependent Relatives</label>
                 <div className="text-sm text-gray-500 mb-2">Hasta £{ALLOWANCE_VALUES.dependentRelative} c/u (max 3)</div>
                 <input
-                  type="number"
+                  type="text"
+                    inputMode="numeric"
                   min="0"
                   max="3"
                   value={allowances.dependentRelatives}
                   onChange={(e) => setAllowances(prev => ({ ...prev, dependentRelatives: parseInt(e.target.value) || 0 }))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900"
                 />
               </div>
             </div>
@@ -322,12 +327,13 @@ export default function GibraltarCalculatorPremium({ onSave, isPremium = true }:
                 <label className="font-medium">Home Purchase (Anual)</label>
                 <div className="text-sm text-gray-500 mb-2">£1,000/año (max 4 años = £4,000)</div>
                 <input
-                  type="number"
+                  type="text"
+                    inputMode="numeric"
                   min="0"
                   max="4"
                   value={allowances.homePurchaseYearsRemaining}
                   onChange={(e) => setAllowances(prev => ({ ...prev, homePurchaseYearsRemaining: parseInt(e.target.value) || 0 }))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900"
                   placeholder="Años restantes"
                 />
               </div>
@@ -337,12 +343,13 @@ export default function GibraltarCalculatorPremium({ onSave, isPremium = true }:
                 <label className="font-medium">Préstamo Hipotecario (Principal)</label>
                 <div className="text-sm text-gray-500 mb-2">Intereses deducibles sobre máx £350,000 (estimamos 3% anual)</div>
                 <input
-                  type="number"
+                  type="text"
+                    inputMode="numeric"
                   min="0"
                   max="350000"
                   value={allowances.mortgagePrincipal}
                   onChange={(e) => setAllowances(prev => ({ ...prev, mortgagePrincipal: parseFloat(e.target.value) || 0 }))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900"
                   placeholder="Ej: 250000"
                 />
                 {allowances.mortgagePrincipal > 0 && (
@@ -364,12 +371,13 @@ export default function GibraltarCalculatorPremium({ onSave, isPremium = true }:
                 <label className="font-medium">Medical Insurance</label>
                 <div className="text-sm text-gray-500 mb-2">Hasta £{ALLOWANCE_VALUES.medicalMax.toLocaleString()}</div>
                 <input
-                  type="number"
+                  type="text"
+                    inputMode="numeric"
                   min="0"
                   max={ALLOWANCE_VALUES.medicalMax}
                   value={allowances.medicalInsurance}
                   onChange={(e) => setAllowances(prev => ({ ...prev, medicalInsurance: parseFloat(e.target.value) || 0 }))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900"
                   placeholder="Prima anual"
                 />
               </div>
@@ -379,11 +387,12 @@ export default function GibraltarCalculatorPremium({ onSave, isPremium = true }:
                 <label className="font-medium">Pension Contributions</label>
                 <div className="text-sm text-gray-500 mb-2">Hasta 20% ingresos o £35,000</div>
                 <input
-                  type="number"
+                  type="text"
+                    inputMode="numeric"
                   min="0"
                   value={allowances.pensionContributions}
                   onChange={(e) => setAllowances(prev => ({ ...prev, pensionContributions: parseFloat(e.target.value) || 0 }))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900"
                   placeholder="Aportación anual"
                 />
               </div>
@@ -393,11 +402,12 @@ export default function GibraltarCalculatorPremium({ onSave, isPremium = true }:
                 <label className="font-medium">Life Assurance</label>
                 <div className="text-sm text-gray-500 mb-2">Hasta 1/7 de tus ingresos (£{Math.round(annualIncome / 7).toLocaleString()})</div>
                 <input
-                  type="number"
+                  type="text"
+                    inputMode="numeric"
                   min="0"
                   value={allowances.lifeAssurance}
                   onChange={(e) => setAllowances(prev => ({ ...prev, lifeAssurance: parseFloat(e.target.value) || 0 }))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900"
                   placeholder="Prima anual"
                 />
               </div>

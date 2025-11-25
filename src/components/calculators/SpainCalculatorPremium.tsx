@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { SpainDataPremium, SpainResult } from '@/types'
 import { calculateSpainTax } from '@/lib/spainCalculations'
+import { formatNumber, parseFormattedNumber } from '@/lib/numberFormat'
 import { FileText, AlertCircle, MapPin, Crown, Save, ChevronDown, ChevronUp, Euro } from 'lucide-react'
 
 type IncomeSource = 'gibraltar' | 'spain' | 'both'
@@ -380,7 +381,7 @@ export default function SpainCalculatorPremium({ isPremium = false, onSave }: Pr
             )}
 
             {/* Section: Rendimientos del Trabajo */}
-            <div className="border rounded-lg overflow-hidden">
+            <div className="border rounded-lg overflow-hidden text-gray-900">
               <button
                 onClick={() => toggleSection('rendimientos')}
                 className="w-full bg-blue-50 p-4 flex items-center justify-between hover:bg-blue-100 transition-colors"
@@ -406,13 +407,14 @@ export default function SpainCalculatorPremium({ isPremium = false, onSave }: Pr
                         Sueldo y salarios brutos en España (€) *
                       </label>
                       <input
-                        type="number"
+                        type="text"
+                    inputMode="numeric"
                         value={data.rendimientosTrabajo.sueldoSalarios || ''}
                         onChange={(e) => {
                           handleNestedChange('rendimientosTrabajo', 'sueldoSalarios', parseFloat(e.target.value) || 0)
                           handleInputChange('incomeSpain', parseFloat(e.target.value) || 0)
                         }}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
                         placeholder="Ej: 35000"
                       />
                     </div>
@@ -426,10 +428,11 @@ export default function SpainCalculatorPremium({ isPremium = false, onSave }: Pr
                           Ingresos anuales en Gibraltar (€) *
                         </label>
                         <input
-                          type="number"
+                          type="text"
+                    inputMode="numeric"
                           value={data.incomeGibraltar || ''}
                           onChange={(e) => handleInputChange('incomeGibraltar', parseFloat(e.target.value) || 0)}
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
                           placeholder="Ej: 35000"
                         />
                         <p className="text-xs text-gray-500 mt-1">
@@ -442,10 +445,11 @@ export default function SpainCalculatorPremium({ isPremium = false, onSave }: Pr
                           Impuesto pagado en Gibraltar (€) *
                         </label>
                         <input
-                          type="number"
+                          type="text"
+                    inputMode="numeric"
                           value={data.gibraltarTaxPaid || ''}
                           onChange={(e) => handleInputChange('gibraltarTaxPaid', parseFloat(e.target.value) || 0)}
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
                           placeholder="Ej: 4200"
                         />
                         <p className="text-xs text-gray-500 mt-1">
@@ -458,10 +462,11 @@ export default function SpainCalculatorPremium({ isPremium = false, onSave }: Pr
                           Seguridad Social Gibraltar (€)
                         </label>
                         <input
-                          type="number"
+                          type="text"
+                    inputMode="numeric"
                           value={data.gibraltarSocialSecurity || ''}
                           onChange={(e) => handleInputChange('gibraltarSocialSecurity', parseFloat(e.target.value) || 0)}
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
                           placeholder="Ej: 2500"
                         />
                       </div>
@@ -473,10 +478,11 @@ export default function SpainCalculatorPremium({ isPremium = false, onSave }: Pr
                       Retribución en especie (€)
                     </label>
                     <input
-                      type="number"
+                      type="text"
+                    inputMode="numeric"
                       value={data.rendimientosTrabajo.valoracionEspecie || ''}
                       onChange={(e) => handleNestedChange('rendimientosTrabajo', 'valoracionEspecie', parseFloat(e.target.value) || 0)}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
                       placeholder="Ej: 3000"
                     />
                     <p className="text-xs text-gray-500 mt-1">
@@ -489,10 +495,11 @@ export default function SpainCalculatorPremium({ isPremium = false, onSave }: Pr
                       Dietas y gastos de viaje exentos (€)
                     </label>
                     <input
-                      type="number"
+                      type="text"
+                    inputMode="numeric"
                       value={data.rendimientosTrabajo.dietasExentas || ''}
                       onChange={(e) => handleNestedChange('rendimientosTrabajo', 'dietasExentas', parseFloat(e.target.value) || 0)}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
                       placeholder="Ej: 1500"
                     />
                   </div>
@@ -505,7 +512,7 @@ export default function SpainCalculatorPremium({ isPremium = false, onSave }: Pr
                     <select
                       value={data.autonomousCommunity}
                       onChange={(e) => handleInputChange('autonomousCommunity', e.target.value)}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
                     >
                       <option value="andalucia">Andalucía</option>
                       <option value="aragon">Aragón</option>
@@ -534,10 +541,11 @@ export default function SpainCalculatorPremium({ isPremium = false, onSave }: Pr
                         Retenciones practicadas (€)
                       </label>
                       <input
-                        type="number"
+                        type="text"
+                    inputMode="numeric"
                         value={data.retentions || ''}
                         onChange={(e) => handleInputChange('retentions', parseFloat(e.target.value) || 0)}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
                         placeholder="Ej: 5000"
                       />
                       <p className="text-xs text-gray-500 mt-1">
@@ -550,7 +558,7 @@ export default function SpainCalculatorPremium({ isPremium = false, onSave }: Pr
             </div>
 
             {/* Section: Gastos Deducibles */}
-            <div className="border rounded-lg overflow-hidden">
+            <div className="border rounded-lg overflow-hidden text-gray-900">
               <button
                 onClick={() => toggleSection('gastos')}
                 className="w-full bg-green-50 p-4 flex items-center justify-between hover:bg-green-100 transition-colors"
@@ -574,10 +582,11 @@ export default function SpainCalculatorPremium({ isPremium = false, onSave }: Pr
                       Cotizaciones Seguridad Social (€)
                     </label>
                     <input
-                      type="number"
+                      type="text"
+                    inputMode="numeric"
                       value={data.gastosDeducibles.seguridadSocial || ''}
                       onChange={(e) => handleNestedChange('gastosDeducibles', 'seguridadSocial', parseFloat(e.target.value) || 0)}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
                       placeholder="Ej: 3000"
                     />
                   </div>
@@ -587,10 +596,11 @@ export default function SpainCalculatorPremium({ isPremium = false, onSave }: Pr
                       Cuotas sindicales (€)
                     </label>
                     <input
-                      type="number"
+                      type="text"
+                    inputMode="numeric"
                       value={data.gastosDeducibles.cuotasSindicales || ''}
                       onChange={(e) => handleNestedChange('gastosDeducibles', 'cuotasSindicales', parseFloat(e.target.value) || 0)}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
                       placeholder="Ej: 200"
                     />
                   </div>
@@ -600,10 +610,11 @@ export default function SpainCalculatorPremium({ isPremium = false, onSave }: Pr
                       Colegios profesionales (€) <span className="text-gray-500">(máx. 500€)</span>
                     </label>
                     <input
-                      type="number"
+                      type="text"
+                    inputMode="numeric"
                       value={data.gastosDeducibles.colegiosProfesionales || ''}
                       onChange={(e) => handleNestedChange('gastosDeducibles', 'colegiosProfesionales', parseFloat(e.target.value) || 0)}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
                       placeholder="Ej: 350"
                     />
                   </div>
@@ -613,10 +624,11 @@ export default function SpainCalculatorPremium({ isPremium = false, onSave }: Pr
                       Gastos defensa jurídica laboral (€) <span className="text-gray-500">(máx. 300€)</span>
                     </label>
                     <input
-                      type="number"
+                      type="text"
+                    inputMode="numeric"
                       value={data.gastosDeducibles.gastosDefensaJuridica || ''}
                       onChange={(e) => handleNestedChange('gastosDeducibles', 'gastosDefensaJuridica', parseFloat(e.target.value) || 0)}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
                       placeholder="Ej: 200"
                     />
                   </div>
@@ -641,7 +653,7 @@ export default function SpainCalculatorPremium({ isPremium = false, onSave }: Pr
             </div>
 
             {/* Section: Reducciones Base Imponible */}
-            <div className="border rounded-lg overflow-hidden">
+            <div className="border rounded-lg overflow-hidden text-gray-900">
               <button
                 onClick={() => toggleSection('reducciones')}
                 className="w-full bg-purple-50 p-4 flex items-center justify-between hover:bg-purple-100 transition-colors"
@@ -665,10 +677,11 @@ export default function SpainCalculatorPremium({ isPremium = false, onSave }: Pr
                       Aportaciones planes de pensiones individuales (€) <span className="text-gray-500">(máx. 1.500€)</span>
                     </label>
                     <input
-                      type="number"
+                      type="text"
+                    inputMode="numeric"
                       value={data.reduccionesBI.aportacionesPlanesPrivados || ''}
                       onChange={(e) => handleNestedChange('reduccionesBI', 'aportacionesPlanesPrivados', parseFloat(e.target.value) || 0)}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
                       placeholder="Ej: 1500"
                     />
                   </div>
@@ -678,10 +691,11 @@ export default function SpainCalculatorPremium({ isPremium = false, onSave }: Pr
                       Aportaciones planes de pensiones empresa (€) <span className="text-gray-500">(máx. 8.500€)</span>
                     </label>
                     <input
-                      type="number"
+                      type="text"
+                    inputMode="numeric"
                       value={data.reduccionesBI.aportacionesPlanesEmpresa || ''}
                       onChange={(e) => handleNestedChange('reduccionesBI', 'aportacionesPlanesEmpresa', parseFloat(e.target.value) || 0)}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
                       placeholder="Ej: 5000"
                     />
                   </div>
@@ -691,10 +705,11 @@ export default function SpainCalculatorPremium({ isPremium = false, onSave }: Pr
                       Pensiones compensatorias al cónyuge (€)
                     </label>
                     <input
-                      type="number"
+                      type="text"
+                    inputMode="numeric"
                       value={data.reduccionesBI.pensionesCompensatorias || ''}
                       onChange={(e) => handleNestedChange('reduccionesBI', 'pensionesCompensatorias', parseFloat(e.target.value) || 0)}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
                       placeholder="Ej: 6000"
                     />
                   </div>
@@ -704,10 +719,11 @@ export default function SpainCalculatorPremium({ isPremium = false, onSave }: Pr
                       Anualidades por alimentos a hijos (€)
                     </label>
                     <input
-                      type="number"
+                      type="text"
+                    inputMode="numeric"
                       value={data.reduccionesBI.anualidadesAlimentos || ''}
                       onChange={(e) => handleNestedChange('reduccionesBI', 'anualidadesAlimentos', parseFloat(e.target.value) || 0)}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
                       placeholder="Ej: 3600"
                     />
                   </div>
@@ -716,7 +732,7 @@ export default function SpainCalculatorPremium({ isPremium = false, onSave }: Pr
             </div>
 
             {/* Section: Mínimos Personales y Familiares */}
-            <div className="border rounded-lg overflow-hidden">
+            <div className="border rounded-lg overflow-hidden text-gray-900">
               <button
                 onClick={() => toggleSection('minimos')}
                 className="w-full bg-yellow-50 p-4 flex items-center justify-between hover:bg-yellow-100 transition-colors"
@@ -779,14 +795,15 @@ export default function SpainCalculatorPremium({ isPremium = false, onSave }: Pr
                           Hijos menores de 25 años
                         </label>
                         <input
-                          type="number"
+                          type="text"
+                    inputMode="numeric"
                           min="0"
                           value={data.minimos.descendientes.menores25 || ''}
                           onChange={(e) => {
                             handleDoubleNestedChange('minimos', 'descendientes', 'menores25', parseInt(e.target.value) || 0)
                             handleInputChange('hasChildren', (parseInt(e.target.value) || 0) > 0)
                           }}
-                          className="w-24 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          className="w-24 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
                         />
                         <p className="text-xs text-gray-500 mt-1">1º: 2.400€, 2º: 2.700€, 3º: 4.000€, 4º+: 4.500€</p>
                       </div>
@@ -796,11 +813,12 @@ export default function SpainCalculatorPremium({ isPremium = false, onSave }: Pr
                           De ellos, menores de 3 años
                         </label>
                         <input
-                          type="number"
+                          type="text"
+                    inputMode="numeric"
                           min="0"
                           value={data.minimos.descendientes.menores3 || ''}
                           onChange={(e) => handleDoubleNestedChange('minimos', 'descendientes', 'menores3', parseInt(e.target.value) || 0)}
-                          className="w-24 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          className="w-24 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
                         />
                         <p className="text-xs text-gray-500 mt-1">+2.800€ por cada uno</p>
                       </div>
@@ -810,11 +828,12 @@ export default function SpainCalculatorPremium({ isPremium = false, onSave }: Pr
                           Con discapacidad ≥33%
                         </label>
                         <input
-                          type="number"
+                          type="text"
+                    inputMode="numeric"
                           min="0"
                           value={data.minimos.descendientes.discapacidad33 || ''}
                           onChange={(e) => handleDoubleNestedChange('minimos', 'descendientes', 'discapacidad33', parseInt(e.target.value) || 0)}
-                          className="w-24 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          className="w-24 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
                         />
                         <p className="text-xs text-gray-500 mt-1">+3.000€ por cada uno</p>
                       </div>
@@ -824,11 +843,12 @@ export default function SpainCalculatorPremium({ isPremium = false, onSave }: Pr
                           Con discapacidad ≥65%
                         </label>
                         <input
-                          type="number"
+                          type="text"
+                    inputMode="numeric"
                           min="0"
                           value={data.minimos.descendientes.discapacidad65 || ''}
                           onChange={(e) => handleDoubleNestedChange('minimos', 'descendientes', 'discapacidad65', parseInt(e.target.value) || 0)}
-                          className="w-24 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          className="w-24 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
                         />
                         <p className="text-xs text-gray-500 mt-1">+9.000€ por cada uno</p>
                       </div>
@@ -868,11 +888,12 @@ export default function SpainCalculatorPremium({ isPremium = false, onSave }: Pr
                           Ascendientes mayores de 65 años
                         </label>
                         <input
-                          type="number"
+                          type="text"
+                    inputMode="numeric"
                           min="0"
                           value={data.minimos.ascendientes.mayores65 || ''}
                           onChange={(e) => handleDoubleNestedChange('minimos', 'ascendientes', 'mayores65', parseInt(e.target.value) || 0)}
-                          className="w-24 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          className="w-24 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
                         />
                         <p className="text-xs text-gray-500 mt-1">1.150€ por cada uno</p>
                       </div>
@@ -882,11 +903,12 @@ export default function SpainCalculatorPremium({ isPremium = false, onSave }: Pr
                           De ellos, mayores de 75 años
                         </label>
                         <input
-                          type="number"
+                          type="text"
+                    inputMode="numeric"
                           min="0"
                           value={data.minimos.ascendientes.mayores75 || ''}
                           onChange={(e) => handleDoubleNestedChange('minimos', 'ascendientes', 'mayores75', parseInt(e.target.value) || 0)}
-                          className="w-24 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          className="w-24 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
                         />
                         <p className="text-xs text-gray-500 mt-1">+1.400€ adicionales</p>
                       </div>
@@ -896,11 +918,12 @@ export default function SpainCalculatorPremium({ isPremium = false, onSave }: Pr
                           Con discapacidad ≥33%
                         </label>
                         <input
-                          type="number"
+                          type="text"
+                    inputMode="numeric"
                           min="0"
                           value={data.minimos.ascendientes.discapacidad33 || ''}
                           onChange={(e) => handleDoubleNestedChange('minimos', 'ascendientes', 'discapacidad33', parseInt(e.target.value) || 0)}
-                          className="w-24 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          className="w-24 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
                         />
                         <p className="text-xs text-gray-500 mt-1">+3.000€ por cada uno</p>
                       </div>
@@ -910,11 +933,12 @@ export default function SpainCalculatorPremium({ isPremium = false, onSave }: Pr
                           Con discapacidad ≥65%
                         </label>
                         <input
-                          type="number"
+                          type="text"
+                    inputMode="numeric"
                           min="0"
                           value={data.minimos.ascendientes.discapacidad65 || ''}
                           onChange={(e) => handleDoubleNestedChange('minimos', 'ascendientes', 'discapacidad65', parseInt(e.target.value) || 0)}
-                          className="w-24 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          className="w-24 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
                         />
                         <p className="text-xs text-gray-500 mt-1">+9.000€ por cada uno</p>
                       </div>
@@ -925,7 +949,7 @@ export default function SpainCalculatorPremium({ isPremium = false, onSave }: Pr
             </div>
 
             {/* Section: Deducciones Estatales */}
-            <div className="border rounded-lg overflow-hidden">
+            <div className="border rounded-lg overflow-hidden text-gray-900">
               <button
                 onClick={() => toggleSection('deduccionesEstatales')}
                 className="w-full bg-red-50 p-4 flex items-center justify-between hover:bg-red-100 transition-colors"
@@ -949,10 +973,11 @@ export default function SpainCalculatorPremium({ isPremium = false, onSave }: Pr
                       Inversión vivienda habitual (€)
                     </label>
                     <input
-                      type="number"
+                      type="text"
+                    inputMode="numeric"
                       value={data.deduccionesEstatales.inversionVivienda || ''}
                       onChange={(e) => handleNestedChange('deduccionesEstatales', 'inversionVivienda', parseFloat(e.target.value) || 0)}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
                       placeholder="Ej: 9040"
                     />
                     <p className="text-xs text-gray-500 mt-1">
@@ -965,10 +990,11 @@ export default function SpainCalculatorPremium({ isPremium = false, onSave }: Pr
                       Donativos a ONG y fundaciones (€)
                     </label>
                     <input
-                      type="number"
+                      type="text"
+                    inputMode="numeric"
                       value={data.deduccionesEstatales.donativosONG || ''}
                       onChange={(e) => handleNestedChange('deduccionesEstatales', 'donativosONG', parseFloat(e.target.value) || 0)}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
                       placeholder="Ej: 500"
                     />
                     <p className="text-xs text-gray-500 mt-1">
@@ -981,10 +1007,11 @@ export default function SpainCalculatorPremium({ isPremium = false, onSave }: Pr
                       Donativos a partidos políticos (€)
                     </label>
                     <input
-                      type="number"
+                      type="text"
+                    inputMode="numeric"
                       value={data.deduccionesEstatales.donativosPartidos || ''}
                       onChange={(e) => handleNestedChange('deduccionesEstatales', 'donativosPartidos', parseFloat(e.target.value) || 0)}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
                       placeholder="Ej: 600"
                     />
                     <p className="text-xs text-gray-500 mt-1">
@@ -997,10 +1024,11 @@ export default function SpainCalculatorPremium({ isPremium = false, onSave }: Pr
                       Deducciones medioambientales (€)
                     </label>
                     <input
-                      type="number"
+                      type="text"
+                    inputMode="numeric"
                       value={data.deduccionesEstatales.actuacionesMedioambiente || ''}
                       onChange={(e) => handleNestedChange('deduccionesEstatales', 'actuacionesMedioambiente', parseFloat(e.target.value) || 0)}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
                       placeholder="Ej: 1000"
                     />
                     <p className="text-xs text-gray-500 mt-1">
@@ -1012,7 +1040,7 @@ export default function SpainCalculatorPremium({ isPremium = false, onSave }: Pr
             </div>
 
             {/* Section: Deducciones Autonómicas */}
-            <div className="border rounded-lg overflow-hidden">
+            <div className="border rounded-lg overflow-hidden text-gray-900">
               <button
                 onClick={() => toggleSection('deduccionesAutonomicas')}
                 className="w-full bg-indigo-50 p-4 flex items-center justify-between hover:bg-indigo-100 transition-colors"
@@ -1044,10 +1072,11 @@ export default function SpainCalculatorPremium({ isPremium = false, onSave }: Pr
                         Por nacimiento/adopción (€)
                       </label>
                       <input
-                        type="number"
+                        type="text"
+                    inputMode="numeric"
                         value={data.deduccionesAutonomicas.porNacimiento || ''}
                         onChange={(e) => handleNestedChange('deduccionesAutonomicas', 'porNacimiento', parseFloat(e.target.value) || 0)}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
                         placeholder="Ej: 600"
                       />
                     </div>
@@ -1057,10 +1086,11 @@ export default function SpainCalculatorPremium({ isPremium = false, onSave }: Pr
                         Por adopción internacional (€)
                       </label>
                       <input
-                        type="number"
+                        type="text"
+                    inputMode="numeric"
                         value={data.deduccionesAutonomicas.porAdopcion || ''}
                         onChange={(e) => handleNestedChange('deduccionesAutonomicas', 'porAdopcion', parseFloat(e.target.value) || 0)}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
                         placeholder="Ej: 600"
                       />
                     </div>
@@ -1070,10 +1100,11 @@ export default function SpainCalculatorPremium({ isPremium = false, onSave }: Pr
                         Por familia numerosa (€)
                       </label>
                       <input
-                        type="number"
+                        type="text"
+                    inputMode="numeric"
                         value={data.deduccionesAutonomicas.porFamiliaNumerosa || ''}
                         onChange={(e) => handleNestedChange('deduccionesAutonomicas', 'porFamiliaNumerosa', parseFloat(e.target.value) || 0)}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
                         placeholder="Ej: 500"
                       />
                     </div>
@@ -1083,10 +1114,11 @@ export default function SpainCalculatorPremium({ isPremium = false, onSave }: Pr
                         Por alquiler vivienda (€)
                       </label>
                       <input
-                        type="number"
+                        type="text"
+                    inputMode="numeric"
                         value={data.deduccionesAutonomicas.porAlquilerVivienda || ''}
                         onChange={(e) => handleNestedChange('deduccionesAutonomicas', 'porAlquilerVivienda', parseFloat(e.target.value) || 0)}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
                         placeholder="Ej: 500"
                       />
                     </div>
@@ -1096,10 +1128,11 @@ export default function SpainCalculatorPremium({ isPremium = false, onSave }: Pr
                         Por gastos educativos (€)
                       </label>
                       <input
-                        type="number"
+                        type="text"
+                    inputMode="numeric"
                         value={data.deduccionesAutonomicas.porGastosEducativos || ''}
                         onChange={(e) => handleNestedChange('deduccionesAutonomicas', 'porGastosEducativos', parseFloat(e.target.value) || 0)}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
                         placeholder="Ej: 1000"
                       />
                     </div>
@@ -1109,10 +1142,11 @@ export default function SpainCalculatorPremium({ isPremium = false, onSave }: Pr
                         Por cuidado de personas (€)
                       </label>
                       <input
-                        type="number"
+                        type="text"
+                    inputMode="numeric"
                         value={data.deduccionesAutonomicas.porCuidadoPersonas || ''}
                         onChange={(e) => handleNestedChange('deduccionesAutonomicas', 'porCuidadoPersonas', parseFloat(e.target.value) || 0)}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
                         placeholder="Ej: 300"
                       />
                     </div>
@@ -1123,10 +1157,11 @@ export default function SpainCalculatorPremium({ isPremium = false, onSave }: Pr
                       Otras deducciones autonómicas (€)
                     </label>
                     <input
-                      type="number"
+                      type="text"
+                    inputMode="numeric"
                       value={data.deduccionesAutonomicas.otras || ''}
                       onChange={(e) => handleNestedChange('deduccionesAutonomicas', 'otras', parseFloat(e.target.value) || 0)}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
                       placeholder="Ej: 200"
                     />
                   </div>
