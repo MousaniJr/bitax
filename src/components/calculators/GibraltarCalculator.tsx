@@ -88,6 +88,39 @@ export default function GibraltarCalculator() {
           Introduce tus datos para comparar automáticamente entre ABS (Allowance Based System) y GIBS (Gross Income Based System).
         </p>
 
+        {/* Alerta de limitaciones versión gratis */}
+        <div className="bg-amber-50 border-l-4 border-amber-500 p-4 mb-6">
+          <div className="flex">
+            <Info className="h-5 w-5 text-amber-500 flex-shrink-0 mt-0.5" />
+            <div className="ml-3">
+              <h4 className="text-sm font-semibold text-amber-800 mb-1">
+                Calculadora Básica - Limitaciones
+              </h4>
+              <p className="text-sm text-amber-700 mb-2">
+                Esta versión <strong>gratuita</strong> te permite calcular impuestos introduciendo
+                manualmente el <strong>Total Allowances</strong> o <strong>Tax Code</strong>.
+              </p>
+              <p className="text-sm text-amber-700 mb-2">
+                <strong>NO incluye:</strong>
+              </p>
+              <ul className="text-sm text-amber-700 list-disc list-inside ml-2 space-y-1">
+                <li>Cálculo automático de allowances individuales</li>
+                <li>Allowances detallados (spouse, children, mortgage, pension, etc.)</li>
+                <li>Deducciones por hijos educados en el extranjero</li>
+                <li>Allowances por discapacidad o single parent</li>
+                <li>Deducciones por seguros médicos y pensiones</li>
+                <li>Allowances por compra de vivienda</li>
+                <li>Senior Citizens allowances</li>
+                <li>Guardar cálculos ilimitados</li>
+              </ul>
+              <p className="text-sm text-amber-700 mt-3">
+                💎 <strong>¿Necesitas calcular allowances detallados?</strong> Usa la versión <strong>Premium</strong> que
+                calcula automáticamente todos tus allowances según tu situación personal y familiar.
+              </p>
+            </div>
+          </div>
+        </div>
+
         {/* Formulario Simplificado */}
         <div className="space-y-6">
           {/* Ingresos anuales */}
