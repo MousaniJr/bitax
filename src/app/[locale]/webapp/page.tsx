@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import Link from 'next/link'
+import { Link } from '@/navigation'
 import { useSession } from 'next-auth/react'
 import GibraltarCalculator from '@/components/calculators/GibraltarCalculator'
 import GibraltarCalculatorPremium from '@/components/calculators/GibraltarCalculatorPremium'
@@ -11,10 +11,13 @@ import GibraltarGuide from '@/components/guides/GibraltarGuide'
 import SpainGuide from '@/components/guides/SpainGuide'
 import { Calculator, FileText, BookOpen, Home, AlertCircle, Crown, Download, User } from 'lucide-react'
 import { GibraltarDataPremium, GibraltarResult, SpainDataPremium, SpainResult } from '@/types'
+import { useTranslations } from 'next-intl';
+import LanguageSelector from '@/components/LanguageSelector';
 
 type TabType = 'gibraltar' | 'spain' | 'guide-gibraltar' | 'guide-spain'
 
 export default function WebAppPage() {
+  const t = useTranslations('WebApp');
   const { data: session, status } = useSession()
   const [activeTab, setActiveTab] = useState<TabType>('gibraltar')
   const [isPremium, setIsPremium] = useState(false)
@@ -49,13 +52,13 @@ export default function WebAppPage() {
       })
 
       if (response.ok) {
-        alert('Declaración guardada correctamente')
+        alert(t('alerts.saveSuccess'))
       } else {
         const error = await response.json()
-        alert(error.error || 'Error al guardar')
+        alert(error.error || t('alerts.saveError'))
       }
     } catch (error) {
-      alert('Error al guardar la declaración')
+      alert(t('alerts.saveErrorGeneric'))
     }
   }
 
@@ -74,13 +77,13 @@ export default function WebAppPage() {
       })
 
       if (response.ok) {
-        alert('Declaración guardada correctamente')
+        alert(t('alerts.saveSuccess'))
       } else {
         const error = await response.json()
-        alert(error.error || 'Error al guardar')
+        alert(error.error || t('alerts.saveError'))
       }
     } catch (error) {
-      alert('Error al guardar la declaración')
+      alert(t('alerts.saveErrorGeneric'))
     }
   }
 
@@ -115,15 +118,15 @@ export default function WebAppPage() {
 
       pdf.save(`bitax-${activeTab}-${new Date().toISOString().split('T')[0]}.pdf`)
     } catch (error) {
-      alert('Error al exportar PDF')
+      alert(t('alerts.exportError'))
     }
   }
 
   const tabs = [
-    { id: 'gibraltar' as TabType, label: 'Gibraltar', icon: Calculator, color: 'red' },
-    { id: 'spain' as TabType, label: 'España', icon: FileText, color: 'blue' },
-    { id: 'guide-gibraltar' as TabType, label: 'Guía Gibraltar', icon: BookOpen, color: 'red' },
-    { id: 'guide-spain' as TabType, label: 'Guía España', icon: BookOpen, color: 'blue' },
+    { id: 'gibraltar' as TabType, label: t('tabs.gibraltar'), icon: Calculator, color: 'red' },
+    { id: 'spain' as TabType, label: t('tabs.spain'), icon: FileText, color: 'blue' },
+    { id: 'guide-gibraltar' as TabType, label: t('tabs.guideGibraltar'), icon: BookOpen, color: 'red' },
+    { id: 'guide-spain' as TabType, label: t('tabs.guideSpain'), icon: BookOpen, color: 'blue' },
   ]
 
   return (
@@ -136,20 +139,21 @@ export default function WebAppPage() {
             <span className="text-xl font-bold text-gray-900">BiTax</span>
           </Link>
           <div className="flex items-center space-x-4">
+            <LanguageSelector />
             {isPremium && (
               <div className="flex items-center space-x-1 bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full">
                 <Crown className="h-4 w-4" />
-                <span className="text-sm font-semibold">Premium</span>
+                <span className="text-sm font-semibold">{t('premium.badge')}</span>
               </div>
             )}
             {session ? (
               <Link href="/dashboard" className="flex items-center space-x-2 text-sm text-gray-600 hover:text-gray-900">
                 <User className="h-4 w-4" />
-                <span>Dashboard</span>
+                <span>{t('nav.dashboard')}</span>
               </Link>
             ) : (
               <Link href="/auth/signin" className="text-sm text-blue-600 hover:text-blue-800 font-semibold">
-                Iniciar Sesión
+                {t('nav.login')}
               </Link>
             )}
           </div>
@@ -162,7 +166,7 @@ export default function WebAppPage() {
           <div className="flex items-center space-x-2">
             <AlertCircle className="h-5 w-5 text-yellow-600 flex-shrink-0" />
             <p className="text-sm text-yellow-800">
-              <strong>Aviso:</strong> Cálculos estimados. No sustituye asesoramiento profesional. Consulta con un experto fiscal.
+              <strong>{t('disclaimer.title')}</strong> {t('disclaimer.text')}
             </p>
           </div>
         </div>
@@ -177,7 +181,7 @@ export default function WebAppPage() {
             <div className="flex items-center justify-between mb-4 bg-yellow-50 p-4 rounded-lg">
               <div className="flex items-center space-x-3">
                 <Crown className="h-5 w-5 text-yellow-600" />
-                <span className="font-semibold text-gray-900">Modo Premium</span>
+                <span className="font-semibold text-gray-900">{t('premium.mode')}</span>
                 <label className="relative inline-flex items-center cursor-pointer ml-2">
                   <input
                     type="checkbox"
@@ -194,7 +198,7 @@ export default function WebAppPage() {
                   className="flex items-center space-x-2 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
                 >
                   <Download className="h-4 w-4" />
-                  <span>Exportar PDF</span>
+                  <span>{t('premium.export')}</span>
                 </button>
               )}
             </div>
@@ -209,8 +213,8 @@ export default function WebAppPage() {
                   ? 'bg-red-600 text-white'
                   : 'bg-white text-gray-700 hover:bg-red-50'
                 : isActive
-                ? 'bg-blue-600 text-white'
-                : 'bg-white text-gray-700 hover:bg-blue-50'
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-white text-gray-700 hover:bg-blue-50'
 
               return (
                 <button
@@ -255,29 +259,24 @@ export default function WebAppPage() {
         {/* Info sobre datos */}
         <div className="mt-12 bg-blue-50 border border-blue-200 rounded-lg p-6">
           <h3 className="text-lg font-bold text-blue-900 mb-2">
-            Tus datos están seguros
+            {t('security.title')}
           </h3>
           {isPremium ? (
             <>
               <p className="text-blue-800 mb-4">
-                Como usuario premium, tus declaraciones se guardan de forma segura en la nube.
-                Puedes acceder a tu historial desde cualquier dispositivo y exportar a PDF.
+                {t('security.premiumText')}
               </p>
               <p className="text-blue-700 text-sm">
-                Accede al <Link href="/dashboard" className="text-blue-600 hover:underline font-semibold">Dashboard</Link> para
-                ver tu historial completo, comparar años y configurar recordatorios.
+                {t('security.premiumAccess')} <Link href="/dashboard" className="text-blue-600 hover:underline font-semibold">{t('security.dashboardLink')}</Link> {t('security.premiumAccessEnd')}
               </p>
             </>
           ) : (
             <>
               <p className="text-blue-800 mb-4">
-                En el modo gratuito, todos tus datos se guardan únicamente en tu navegador (localStorage).
-                No se envían a ningún servidor. Al cerrar la sesión o borrar datos del navegador, toda la
-                información se eliminará automáticamente.
+                {t('security.freeText')}
               </p>
               <p className="text-blue-700 text-sm">
-                Con la <Link href="/dashboard/subscription" className="text-blue-600 hover:underline font-semibold">suscripción premium</Link>,
-                podrás guardar tu historial de manera segura, exportar a PDF y acceder desde cualquier dispositivo.
+                {t('security.subscriptionStart')} <Link href="/dashboard/subscription" className="text-blue-600 hover:underline font-semibold">{t('security.subscriptionLink')}</Link>{t('security.subscriptionEnd')}
               </p>
             </>
           )}
@@ -288,10 +287,10 @@ export default function WebAppPage() {
       <footer className="bg-gray-800 text-white py-6 mt-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <Link href="/" className="text-blue-400 hover:text-blue-300">
-            ← Volver a inicio
+            {t('footer.back')}
           </Link>
           <p className="text-gray-400 mt-2 text-sm">
-            © 2024 BiTax - Gestión de Impuestos España-Gibraltar
+            {t('footer.copyright')}
           </p>
         </div>
       </footer>

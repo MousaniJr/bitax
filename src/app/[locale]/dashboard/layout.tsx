@@ -1,8 +1,8 @@
 'use client'
 
 import { useSession, signOut } from 'next-auth/react'
-import { usePathname, useRouter } from 'next/navigation'
-import Link from 'next/link'
+import { usePathname, useRouter } from '@/navigation'
+import { Link } from '@/navigation'
 import {
   LayoutDashboard,
   FileText,
@@ -17,32 +17,35 @@ import {
   X,
 } from 'lucide-react'
 import { useState } from 'react'
-
-const navigation = [
-  { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-  { name: 'Calculadoras', href: '/webapp', icon: Calculator },
-  { name: 'Historial', href: '/dashboard/history', icon: FileText },
-  { name: 'Comparar', href: '/dashboard/compare', icon: BarChart3 },
-  { name: 'Recordatorios', href: '/dashboard/reminders', icon: Bell },
-  { name: 'Suscripción', href: '/dashboard/subscription', icon: CreditCard },
-]
+import { useTranslations } from 'next-intl';
+import LanguageSelector from '@/components/LanguageSelector';
 
 export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
+  const t = useTranslations('Dashboard');
   const { data: session, status } = useSession()
   const pathname = usePathname()
   const router = useRouter()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+
+  const navigation = [
+    { name: t('nav.dashboard'), href: '/dashboard', icon: LayoutDashboard },
+    { name: t('nav.calculators'), href: '/webapp', icon: Calculator },
+    { name: t('nav.history'), href: '/dashboard/history', icon: FileText },
+    { name: t('nav.compare'), href: '/dashboard/compare', icon: BarChart3 },
+    { name: t('nav.reminders'), href: '/dashboard/reminders', icon: Bell },
+    { name: t('nav.subscription'), href: '/dashboard/subscription', icon: CreditCard },
+  ]
 
   if (status === 'loading') {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Cargando...</p>
+          <p className="mt-4 text-gray-600">{t('header.loading')}</p>
         </div>
       </div>
     )
@@ -79,6 +82,7 @@ export default function DashboardLayout({
 
             {/* User menu */}
             <div className="flex items-center gap-4">
+              <LanguageSelector />
               <span className="text-sm text-gray-600 hidden sm:block">
                 {session?.user?.name || session?.user?.email}
               </span>
@@ -87,7 +91,7 @@ export default function DashboardLayout({
                 className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition"
               >
                 <LogOut className="w-4 h-4" />
-                <span className="hidden sm:inline">Cerrar Sesión</span>
+                <span className="hidden sm:inline">{t('nav.logout')}</span>
               </button>
             </div>
           </div>
@@ -103,14 +107,13 @@ export default function DashboardLayout({
                 {navigation.map((item) => {
                   const isActive = pathname === item.href
                   return (
-                    <li key={item.name}>
+                    <li key={item.href}>
                       <Link
                         href={item.href}
-                        className={`flex items-center gap-3 px-4 py-3 rounded-lg transition ${
-                          isActive
+                        className={`flex items-center gap-3 px-4 py-3 rounded-lg transition ${isActive
                             ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white'
                             : 'text-gray-700 hover:bg-gray-100'
-                        }`}
+                          }`}
                       >
                         <item.icon className="w-5 h-5" />
                         <span className="font-medium">{item.name}</span>
@@ -125,7 +128,7 @@ export default function DashboardLayout({
                     className="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-100 transition"
                   >
                     <Home className="w-5 h-5" />
-                    <span className="font-medium">Inicio</span>
+                    <span className="font-medium">{t('nav.home')}</span>
                   </Link>
                 </li>
               </ul>
@@ -141,15 +144,14 @@ export default function DashboardLayout({
                     {navigation.map((item) => {
                       const isActive = pathname === item.href
                       return (
-                        <li key={item.name}>
+                        <li key={item.href}>
                           <Link
                             href={item.href}
                             onClick={() => setMobileMenuOpen(false)}
-                            className={`flex items-center gap-3 px-4 py-3 rounded-lg transition ${
-                              isActive
+                            className={`flex items-center gap-3 px-4 py-3 rounded-lg transition ${isActive
                                 ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white'
                                 : 'text-gray-700 hover:bg-gray-100'
-                            }`}
+                              }`}
                           >
                             <item.icon className="w-5 h-5" />
                             <span className="font-medium">{item.name}</span>
@@ -165,7 +167,7 @@ export default function DashboardLayout({
                         className="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-100 transition"
                       >
                         <Home className="w-5 h-5" />
-                        <span className="font-medium">Inicio</span>
+                        <span className="font-medium">{t('nav.home')}</span>
                       </Link>
                     </li>
                   </ul>

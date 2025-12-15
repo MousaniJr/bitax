@@ -1,70 +1,88 @@
-import { NextResponse } from 'next/server'
-import { getToken } from 'next-auth/jwt'
-import type { NextRequest } from 'next/server'
+import createMiddleware from 'next-intl/middleware';
+import { getToken } from 'next-auth/jwt';
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
+import { routing } from './i18n/routing';
+
+const intlMiddleware = createMiddleware(routing);
 
 /**
- * Middleware para proteger rutas
- * - Rutas /dashboard/* requieren autenticación
- * - Rutas /api/* (excepto públicas) requieren autenticación
+ * Middleware para proteger rutas y manejar i18n
  */
 export async function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl
+  const { pathname } = request.nextUrl;
+  console.log('Middleware called for path:', pathname);
 
-  // Rutas públicas de API
-  const publicApiRoutes = [
-    '/api/auth',
-  ]
+  // 1. Manejo de API (sin i18n, solo auth)
+  if (pathname.startsWith('/api')) {
+    const publicApiRoutes = ['/api/auth'];
+    const isPublicApiRoute = publicApiRoutes.some(route => pathname.startsWith(route));
 
-  const isPublicApiRoute = publicApiRoutes.some(route => pathname.startsWith(route))
+    if (isPublicApiRoute) {
+      return NextResponse.next();
+    }
 
-  // Si es una ruta de API pública, permitir acceso
-  if (isPublicApiRoute) {
-    return NextResponse.next()
-  }
+    const token = await getToken({
+      req: request,
+      secret: process.env.NEXTAUTH_SECRET,
+    });
 
-  // Obtener token de autenticación
-  const token = await getToken({
-    req: request,
-    secret: process.env.NEXTAUTH_SECRET,
-  })
-
-  // Rutas que requieren autenticación
-  const isProtectedRoute = pathname.startsWith('/dashboard') ||
-                          (pathname.startsWith('/api/') && !isPublicApiRoute)
-
-  // Si es una ruta protegida y no hay token, redirigir a login
-  if (isProtectedRoute && !token) {
-    if (pathname.startsWith('/api/')) {
-      // Para rutas de API, devolver 401
+    if (!token) {
       return NextResponse.json(
         { error: 'No autorizado' },
         { status: 401 }
-      )
+      );
     }
-
-    // Para rutas de página, redirigir a login
-    const url = new URL('/auth/signin', request.url)
-    url.searchParams.set('callbackUrl', pathname)
-    return NextResponse.redirect(url)
+    return NextResponse.next();
   }
 
-  // Si está autenticado e intenta acceder a páginas de auth, redirigir a dashboard
-  if (token && (pathname.startsWith('/auth/signin') || pathname.startsWith('/auth/signup'))) {
-    return NextResponse.redirect(new URL('/dashboard', request.url))
+  // 2. Lógica de Autenticación para Páginas
+  // Excluir archivos estáticos y de sistema si el matcher falla (aunque el matcher debería encargarse)
+  const isAsset = pathname.includes('.') || pathname.startsWith('/_next');
+  if (isAsset) return NextResponse.next();
+
+  const token = await getToken({
+    req: request,
+    secret: process.env.NEXTAUTH_SECRET,
+  });
+
+  // Determinar la ruta sin el locale para chequear protección
+  // pathname podría ser /es/dashboard, /en-GI/dashboard, o /dashboard (si no tiene locale aún)
+  const pathnameIsMissingLocale = routing.locales.every(
+    (locale) => !pathname.startsWith(`/${locale}/`) && pathname !== `/${locale}`
+  );
+
+  let pathWithoutLocale = pathname;
+  if (!pathnameIsMissingLocale) {
+    const segments = pathname.split('/');
+    // segments[0] is empty, segments[1] is locale
+    pathWithoutLocale = '/' + segments.slice(2).join('/');
   }
 
-  return NextResponse.next()
+  // Normalizar path vacío
+  if (pathWithoutLocale === '') pathWithoutLocale = '/';
+
+  const isProtectedRoute = pathWithoutLocale.startsWith('/dashboard');
+  const isAuthPage = pathWithoutLocale.startsWith('/auth/signin') || pathWithoutLocale.startsWith('/auth/signup');
+
+  if (isProtectedRoute && !token) {
+    // Redirigir a login, preservando el locale si existe, o usando el default 'es'
+    const locale = !pathnameIsMissingLocale ? pathname.split('/')[1] : 'es';
+    const url = new URL(`/${locale}/auth/signin`, request.url);
+    url.searchParams.set('callbackUrl', pathname);
+    return NextResponse.redirect(url);
+  }
+
+  if (isAuthPage && token) {
+    const locale = !pathnameIsMissingLocale ? pathname.split('/')[1] : 'es';
+    return NextResponse.redirect(new URL(`/${locale}/dashboard`, request.url));
+  }
+
+  // 3. Aplicar middleware de i18n
+  return intlMiddleware(request);
 }
 
-/**
- * Configuración del middleware
- * Define en qué rutas se ejecuta
- */
 export const config = {
-  matcher: [
-    '/dashboard/:path*',
-    '/api/:path*',
-    '/auth/signin',
-    '/auth/signup',
-  ],
-}
+  // Ajustar matcher para next-intl y nuestras rutas
+  matcher: ['/((?!api|_next|_vercel|.*\\..*).*)']
+};

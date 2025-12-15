@@ -1,0 +1,507 @@
+{
+    "Navigation": {
+        "howItWorks": "How it works",
+        "features": "Features",
+        "pricing": "Pricing",
+        "dashboard": "Dashboard",
+        "login": "Login",
+        "signup": "Sign Up"
+    },
+    "Hero": {
+        "titlePrefix": "The easiest way to manage your taxes between",
+        "spain": "Spain",
+        "and": "and",
+        "gibraltar": "Gibraltar",
+        "subtitle": "Estimated calculations, clear guides, and automatic comparison between tax systems.",
+        "cta": "Open WebApp",
+        "disclaimerTitle": "Important Notice:",
+        "disclaimerText": "This tool uses estimated calculations based on current regulations. Results may not be exact. We recommend consulting with a specialized tax advisor."
+    },
+    "Features": {
+        "title": "What does the WebApp do?",
+        "subtitle": "Professional tools to manage your tax obligations in both countries",
+        "spainDeclaration": "Spain Declaration",
+        "spainDesc": "Estimated IRPF result considering income in both countries and application of the Double Taxation Agreement.",
+        "gibraltarDeclaration": "Gibraltar Declaration",
+        "gibraltarDesc": "Automatic comparison between ABS and GIBS. We show you the most beneficial option for your specific situation.",
+        "guides": "Complete Guides",
+        "guidesDesc": "Step-by-step instructions to file your tax returns in both systems, with practical examples."
+    },
+    "HowItWorks": {
+        "title": "How does it work?",
+        "step1Title": "Fill in your data",
+        "step1Desc": "Enter your tax information simply",
+        "step2Title": "Automatic calculation",
+        "step2Desc": "The system processes your information instantly",
+        "step3Title": "Best option",
+        "step3Desc": "We show you the optimal result for both countries",
+        "step4Title": "Secure data",
+        "step4Desc": "We don't save data unless you pay for a subscription (GDPR)"
+    },
+    "Pricing": {
+        "title": "Plans & Pricing",
+        "freeTitle": "Free Use",
+        "freeSubtitle": "Ideal for occasional queries",
+        "freeCta": "Use for Free",
+        "premiumTitle": "Annual Subscription",
+        "premiumSubtitle": "For frequent users",
+        "premiumCta": "Create Premium Account",
+        "recommended": "Recommended",
+        "perYear": "per year",
+        "features": {
+            "fullTool": "Use the full tool",
+            "unlimited": "Unlimited estimated calculations",
+            "download": "Download result PDF",
+            "dataWipe": "Data is wiped upon exit",
+            "saveData": "Save your data year after year",
+            "history": "History and comparison between years",
+            "detailedReports": "Detailed PDF reports",
+            "reminders": "Automatic deadline reminders",
+            "updates": "Automatic tax updates",
+            "prioritySupport": "Priority support"
+        }
+    },
+    "WebApp": {
+        "nav": {
+            "dashboard": "Dashboard",
+            "login": "Login"
+        },
+        "tabs": {
+            "gibraltar": "Gibraltar",
+            "spain": "Spain",
+            "guideGibraltar": "Gibraltar Guide",
+            "guideSpain": "Spain Guide"
+        },
+        "premium": {
+            "badge": "Premium",
+            "mode": "Premium Mode",
+            "export": "Export PDF"
+        },
+        "alerts": {
+            "saveSuccess": "Declaration saved successfully",
+            "saveError": "Error saving",
+            "saveErrorGeneric": "Error saving declaration",
+            "exportError": "Error exporting PDF"
+        },
+        "disclaimer": {
+            "title": "Notice:",
+            "text": "Estimated calculations. Does not substitute professional advice. Consult a tax expert."
+        },
+        "security": {
+            "title": "Your data is safe",
+            "premiumText": "As a premium user, your declarations are securely saved in the cloud. You can access your history from any device and export to PDF.",
+            "premiumAccess": "Access the",
+            "dashboardLink": "Dashboard",
+            "premiumAccessEnd": "to view your full history, compare years, and configure reminders.",
+            "freeText": "In free mode, all your data is saved only in your browser (localStorage). It is not sent to any server. Logging out or clearing browser data will automatically delete all information.",
+            "subscriptionStart": "With the",
+            "subscriptionLink": "premium subscription",
+            "subscriptionEnd": ", you can securely save your history, export to PDF, and access from any device."
+        },
+        "footer": {
+            "back": "← Back to home",
+            "copyright": "© 2024 BiTax - Spain-Gibraltar Tax Management"
+        }
+    },
+    "Calculator": {
+        "Common": {
+            "calculate": "Calculate Tax",
+            "results": "Results",
+            "annualIncome": "Gross Annual Income (£) *",
+            "tax": "Tax",
+            "effectiveRate": "Effective Rate",
+            "netIncome": "Net Income",
+            "taxToPay": "Tax to Pay",
+            "recommendedSystem": "Recommended System",
+            "better": "BEST",
+            "compareDetails": "Compare Details",
+            "hideDetails": "Hide Details",
+            "saving": "You save with",
+            "difference": "Difference Between Systems",
+            "table": {
+                "bracket": "Bracket",
+                "rate": "Rate",
+                "amount": "Amount",
+                "tax": "Tax",
+                "subtotal": "Subtotal",
+                "total": "TOTAL"
+            }
+        },
+        "Gibraltar": {
+            "title": "Gibraltar Calculator",
+            "description": "Enter your data to automatically compare between ABS (Allowance Based System) and GIBS (Gross Income Based System).",
+            "freeLimitTitle": "Basic Calculator - Limitations",
+            "freeLimitDesc1": "This <strong>free</strong> version allows you to calculate taxes by manually entering the <strong>Total Allowances</strong> or <strong>Tax Code</strong>.",
+            "freeLimitDesc2": "<strong>DOES NOT include:</strong>",
+            "freeLimitList": [
+                "Automatic calculation of individual allowances",
+                "Detailed allowances (spouse, children, mortgage, pension, etc.)",
+                "Deductions for children educated abroad",
+                "Allowances for disability or single parent",
+                "Deductions for medical insurance and pensions",
+                "Allowances for house purchase",
+                "Senior Citizens allowances",
+                "Unlimited saved calculations"
+            ],
+            "premiumPromo": "💎 <strong>Need to calculate detailed allowances?</strong> Use the <strong>Premium</strong> version which automatically calculates all your allowances based on your personal and family situation.",
+            "premiumPromoShort": "💎 <strong>Need more detail?</strong> Upgrade to Premium.",
+            "minimumAllowanceTitle": "Minimum Allowance (Guaranteed minimum by Gibraltar)",
+            "minimumAllowanceDesc": "Gibraltar automatically applies a \"top-up\" to ensure everyone has a minimum of £{amount} in allowances (tax year 2025/26). Your Total Allowance must be equal to or greater than this value.",
+            "totalAllowancesLabel": "Total Allowances (£) *",
+            "totalAllowancesDesc": "Includes: Personal + Spouse + Children + Mortgage + Others",
+            "taxCodeLabel": "Tax Code",
+            "taxCodePlaceholder": "1-52",
+            "taxCodeRange": "Code {code}: £{min} - {maxOrOver}",
+            "taxCodeTip": "<strong>💡 Tip:</strong> You can fill in either field (Total Allowances or Tax Code) and the other will be calculated automatically. If you know your Tax Code from your payslip, enter it here. If you know your total allowances, enter them and the corresponding Tax Code will be calculated.",
+            "absTitle": "ABS (Allowance Based)",
+            "gibsTitle": "GIBS (Gross Income Based)",
+            "grossIncome": "Gross Income",
+            "taxableBase": "Taxable Base",
+            "taxCredit": "Tax Credit (max: £{max} or {percent}%)",
+            "summaryTitle": "Summary with {system} system"
+        },
+        "Spain": {
+            "title": "Spain Calculator (IRPF)",
+            "description": "Calculate your tax return in Spain. Simplified version for quick calculation.",
+            "freeLimitTitle": "Basic Calculator - Limitations",
+            "freeLimitDesc1": "This <strong>free</strong> version calculates IRPF for the simplest case: <strong>single person with no children or additional deductions</strong>.",
+            "freeLimitDesc2": "<strong>DOES NOT include:</strong>",
+            "freeLimitList": [
+                "Deductions for children and descendants",
+                "Family minimums (spouse, ascendants)",
+                "Deductions for primary residence",
+                "Maternity/paternity deductions",
+                "Specific autonomous community deductions",
+                "Individual/joint filing for married couples",
+                "Unlimited saved calculations"
+            ],
+            "premiumPromo": "💎 <strong>Have children or complex family situation?</strong> Use the <strong>Premium</strong> version for precise calculation with all official deductions.",
+            "incomeSourceTitle": "Where did you get your income in the tax year?",
+            "sources": {
+                "gibraltar": "Only Gibraltar",
+                "gibraltarDesc": "I worked only in Gibraltar",
+                "spain": "Only Spain",
+                "spainDesc": "I worked only in Spain",
+                "both": "Both Countries",
+                "bothDesc": "I worked in Gibraltar and Spain"
+            },
+            "changeSource": "Change",
+            "currentSource": {
+                "gibraltar": "Income from Gibraltar only",
+                "spain": "Income from Spain only",
+                "both": "Income from both countries"
+            },
+            "dtaWarning": "<strong>Double Taxation Agreement:</strong> Taxes paid in Gibraltar are deducted from your Spanish declaration to avoid double taxation.",
+            "inputs": {
+                "incomeSpain": "Annual Income in Spain (€) *",
+                "incomeGibraltar": "Annual Income in Gibraltar (€) *",
+                "convertTip": "Convert pounds to euros at the annual average exchange rate",
+                "socialSecurityGib": "Social Security Contributions Gibraltar (€)",
+                "socialSecurityGibDesc": "Contributions paid to Social Security in Gibraltar",
+                "taxPaidGib": "Tax Paid in Gibraltar (€) *",
+                "taxPaidGibDesc": "Enter the Income Tax you paid in Gibraltar according to your fiscal certificate. Note: Gibraltar tax year is from July 1st to June 30th.",
+                "autonomousCommunity": "Autonomous Community of Residence *",
+                "socialSecurity": "Social Security Contributions (€)",
+                "socialSecurityDesc": "Contributions deductible from your taxable base",
+                "retentions": "Retentions Applied (€)",
+                "retentionsDesc": "IRPF withheld from your Spanish payslips",
+                "calculate": "Calculate IRPF Declaration"
+            },
+            "results": {
+                "title": "Declaration Result",
+                "toPay": "To Pay",
+                "toReturn": "To Return",
+                "finalDesc": "Final declaration result (difference between total tax and retentions)",
+                "breakdown": "Detailed Breakdown",
+                "grossIncome": "Total Gross Income",
+                "grossIncomeDesc": "Spain: {spain}€ + Gibraltar: {gibraltar}€",
+                "generalBase": "General Taxable Base",
+                "stateTax": "State Tax",
+                "regionalTax": "Regional Tax",
+                "totalTax": "Total Tax",
+                "effectiveRate": "Effective Rate",
+                "dtrTitle": "Double Taxation Relief",
+                "dtrDesc": "For taxes paid in Gibraltar",
+                "deductions": "Deductions Applied",
+                "retentions": "Retentions Applied",
+                "netIncome": "Estimated Net Income",
+                "dtrExplanation": "<strong>Double Taxation Agreement:</strong> A credit of {amount}€ has been applied corresponding to taxes paid in Gibraltar. This prevents you from paying tax twice on the same income."
+            }
+        }
+    },
+    "Guides": {
+        "Gibraltar": {
+            "title": "Guide: Tax Return in Gibraltar",
+            "intro": "Gibraltar offers two main taxation systems for residents: ABS (Allowance Based System) and GIBS (Gross Income Based System). This guide will help you understand both systems and complete your declaration.",
+            "dates": {
+                "title": "Important Dates",
+                "start": "<strong>July 1st:</strong> Start of Gibraltar tax year",
+                "end": "<strong>June 30th:</strong> End of tax year",
+                "deadline": "<strong>November 30th:</strong> Deadline to submit Tax Return",
+                "payments": "<strong>Important:</strong> Payments on account are usually made in January and July"
+            },
+            "abs": {
+                "title": "ABS System (Allowance Based System)",
+                "whatIsTitle": "What is ABS?",
+                "whatIsDesc": "Traditional system based on allowances (personal deductions) and progressive tax rates.",
+                "allowancesTitle": "Main Allowances:",
+                "allowances": [
+                    "<strong>Personal Allowance:</strong> Approx. £12,000 (standard amount for everyone)",
+                    "<strong>Married Allowance:</strong> Additional £3,000 if you are married",
+                    "<strong>Child Allowance:</strong> £1,200 for each child",
+                    "<strong>Mortgage Interest Relief:</strong> Deduction of mortgage interests (limited to £25,000)"
+                ],
+                "ratesTitle": "ABS Tax Rates (approximate):",
+                "table": {
+                    "headerIncome": "Taxable Income",
+                    "headerRate": "Rate",
+                    "row1": [
+                        "£0 - £4,000",
+                        "17%"
+                    ],
+                    "row2": [
+                        "£4,001 - £16,000",
+                        "20%"
+                    ],
+                    "row3": [
+                        "£16,001 - £25,000",
+                        "21%"
+                    ],
+                    "row4": [
+                        "£25,001 - £40,000",
+                        "23%"
+                    ],
+                    "row5": [
+                        "Over £40,000",
+                        "28%"
+                    ]
+                }
+            },
+            "gibs": {
+                "title": "GIBS System (Gross Income Based System)",
+                "whatIsTitle": "What is GIBS?",
+                "whatIsDesc": "Simplified system introduced in 2010. Applies a fixed rate on gross income, without significant deductions. Simpler but may result in higher taxation for some people.",
+                "featuresTitle": "Main Features:",
+                "features": [
+                    "<strong>Base Rate:</strong> 20% on gross income",
+                    "<strong>No Allowances:</strong> No significant personal deductions",
+                    "<strong>Simplicity:</strong> Very straightforward and transparent calculation",
+                    "<strong>Minor Adjustments:</strong> Small reductions for family circumstances"
+                ]
+            },
+            "comparison": {
+                "title": "ABS or GIBS? Which one to choose?",
+                "absBestTitle": "ABS is better if:",
+                "absBest": [
+                    "You have low-to-medium income",
+                    "You are married or have children",
+                    "You have a mortgage with high interest",
+                    "You have other applicable deductions"
+                ],
+                "gibsBestTitle": "GIBS is better if:",
+                "gibsBest": [
+                    "You have very high income",
+                    "You are single with no children",
+                    "You have no mortgage or deductions",
+                    "You prefer administrative simplicity"
+                ]
+            },
+            "docs": {
+                "title": "Required Documentation",
+                "list": [
+                    "<strong>Certificate of Wages (P60 or P45):</strong> Issued by your employer",
+                    "<strong>ID Card or Passport:</strong> Valid identity document",
+                    "<strong>Marriage Certificate:</strong> If applying for married allowance",
+                    "<strong>Children Birth Certificates:</strong> If applying for child allowance",
+                    "<strong>Mortgage Interest Certificate:</strong> From bank or financial institution",
+                    "<strong>Other Income:</strong> Rents, dividends, investments, etc."
+                ]
+            },
+            "steps": {
+                "title": "Steps to File Your Return",
+                "step1Title": "Gather all documentation",
+                "step1Desc": "Ensure you have all necessary certificates and documents",
+                "step2Title": "Decide between ABS or GIBS",
+                "step2Desc": "Use our calculator to see which suits you best",
+                "step3Title": "Complete the Tax Return form",
+                "step3Desc": "Available at the Income Tax Office or online",
+                "step4Title": "Submit by November 30th",
+                "step4Desc": "You can do it in person, by mail, or online",
+                "step5Title": "Pay the resulting tax",
+                "step5Desc": "According to the payment schedule established by the Income Tax Office"
+            },
+            "specialCases": {
+                "title": "Special Cases",
+                "case1Title": "Cross-border worker (live in Spain)",
+                "case1Desc": "If you work in Gibraltar but live in Spain, you must declare in both countries. Gibraltar will withhold taxes at source, but you must include this income in your Spanish declaration applying double taxation relief.",
+                "case2Title": "Mixed Teleworking",
+                "case2Desc": "If you telework part of the time from Spain, taxation can be complex. Consult a tax advisor specializing in these cases.",
+                "case3Title": "First year in Gibraltar",
+                "case3Desc": "In your first tax year in Gibraltar, you may have to file a proportional return. Make sure to declare your employment start date correctly."
+            },
+            "resources": {
+                "title": "Official Resources",
+                "office": "<strong>Income Tax Office Gibraltar:</strong> HM Customs, Watergate House, 2/8 Casemates Square",
+                "phone": "<strong>Tel:</strong> +350 200 46600",
+                "email": "<strong>Email:</strong> itd@gibraltar.gov.gi",
+                "web": "<strong>Web:</strong> www.gibraltar.gov.gi"
+            }
+        },
+        "Spain": {
+            "title": "Guide: Tax Return in Spain",
+            "intro": "If you work in Gibraltar but live in Spain, or have income in both countries, you must file the IRPF declaration in Spain. This guide explains how to do it correctly applying the double taxation relief.",
+            "dates": {
+                "title": "Important Dates (Tax Campaign)",
+                "april": "<strong>April 1st:</strong> Start of Tax Campaign (online filing)",
+                "may": "<strong>May:</strong> In-person and phone support begins (exact date varies)",
+                "june30": "<strong>June 30th:</strong> Deadline to file the declaration",
+                "june25": "<strong>June 25th:</strong> If result is to pay with bank direct debit"
+            },
+            "obliged": {
+                "title": "Are you obliged to declare?",
+                "subtitle": "Obliged to declare:",
+                "list": [
+                    "Employment income over <strong>€22,000/year</strong> (one payer)",
+                    "Over <strong>€14,000</strong> with more than one payer (if 2nd exceeds €1,500)",
+                    "Movable or immovable capital income over <strong>€1,600</strong>",
+                    "Capital gains over <strong>€1,000</strong>",
+                    "<strong>Important:</strong> If you work in Gibraltar, you are almost always obliged to declare"
+                ]
+            },
+            "dta": {
+                "title": "Double Taxation Agreement Spain-Gibraltar",
+                "whatIsTitle": "What is it?",
+                "whatIsDesc": "The agreement prevents you from paying taxes twice on the same income. Taxes paid in Gibraltar can be deducted from your Spanish declaration via a <strong>tax credit</strong>.",
+                "howTitle": "How does it work?",
+                "steps": [
+                    "Declare all your income in Spain (including Gibraltar)",
+                    "Calculate Spanish tax on total income",
+                    "Subtract tax already paid in Gibraltar (tax credit)",
+                    "Pay the difference (if any) or receive refund"
+                ],
+                "example": "<strong>Practical Example:</strong> If you earn €40,000 in Gibraltar and pay €8,000 taxes there, and Spanish tax on that amount would be €10,000, you would only pay €2,000 extra in Spain."
+            },
+            "model100": {
+                "title": "Model 100: Tax Return",
+                "intro": "Model 100 is the official form for the IRPF declaration. Here we explain the most relevant sections for Gibraltar workers:",
+                "sec1Title": "1. Employment Income (Boxes 001-030)",
+                "sec1Desc": "Includes all your labor income, both from Spain and Gibraltar. Use the annual average exchange rate to convert pounds to euros.",
+                "sec2Title": "2. Contributions and Deductions (Boxes 005-006)",
+                "sec2Desc": "Includes Social Security contributions. If you contribute in Gibraltar, they are also deductible.",
+                "sec3Title": "3. General Taxable Base (Boxes 435-455)",
+                "sec3Desc": "After applying reductions for employment income, deductible expenses, etc.",
+                "sec4Title": "4. State and Regional Tax Quota (Boxes 505-540)",
+                "sec4Desc": "Quotas are calculated according to progressive scales of your autonomous community.",
+                "sec5Title": "5. International Double Taxation Deduction (Box 596)",
+                "sec5Desc": "<strong>VERY IMPORTANT!</strong> Here is where you apply the credit for taxes paid in Gibraltar. You will need a certificate from Gibraltar Income Tax Office regarding payments made there.",
+                "sec6Title": "6. Differential Quota (Box 610)",
+                "sec6Desc": "Final result: to pay or to refund. Tax retentions are subtracted."
+            },
+            "docs": {
+                "title": "Required Documentation",
+                "subtitle": "Essential Documents:",
+                "list": [
+                    "<strong>DNI/NIE:</strong> Valid Spanish identity document",
+                    "<strong>Spanish Retentions Certificate:</strong> If you have income in Spain",
+                    "<strong>Gibraltar Wages Certificate (P60):</strong> Issued by your Gibraltar employer",
+                    "<strong>Gibraltar Tax Paid Certificate:</strong> From Income Tax Office (essential for double taxation deduction)",
+                    "<strong>Deduction Proofs:</strong> Mortgage, donations, pension plans, etc.",
+                    "<strong>Large Family Certificate:</strong> If applicable",
+                    "<strong>Bank Details:</strong> IBAN for direct debit or refund"
+                ]
+            },
+            "steps": {
+                "title": "Steps to File Your Return",
+                "s1t": "Get your Cl@ve PIN or Digital Certificate",
+                "s1d": "Required to access Tax Agency website",
+                "s2t": "Access Renta WEB",
+                "s2d": "At www.agenciatributaria.es during campaign (April-June)",
+                "s3t": "Review Draft",
+                "s3d": "AEAT generates an automatic draft, but <strong>WILL NOT include your Gibraltar income</strong>. You must add it manually.",
+                "s4t": "Add Gibraltar Income",
+                "s4d": "In employment income section, add your Gibraltar income converted to euros",
+                "s5t": "Apply Double Taxation Deduction",
+                "s5d": "In box 596, enter amount of taxes paid in Gibraltar (with certificate)",
+                "s6t": "Add other deductions",
+                "s6d": "Housing (if applicable), large family, disability, etc.",
+                "s7t": "Review and Submit",
+                "s7d": "Verify all data, save a copy and submit before June 30th"
+            },
+            "deductions": {
+                "title": "Common Deductions",
+                "housingTitle": "Primary Residence",
+                "housingDesc": "Up to 15% of payments (max €9,040/year). Only if purchased before 2013.",
+                "maternityTitle": "Maternity/Paternity",
+                "maternityDesc": "Up to €1,200/year per child under 3 (working mothers).",
+                "familyTitle": "Large Family",
+                "familyDesc": "€1,200 (general) or €2,400 (special) per year.",
+                "disabilityTitle": "Disability",
+                "disabilityDesc": "Deductions for taxpayer or disabled ascendants/descendants.",
+                "donationsTitle": "Donations",
+                "donationsDesc": "80% first €150, 35-40% of rest (NGOs and foundations).",
+                "pensionsTitle": "Pension Plans",
+                "pensionsDesc": "Reduce taxable base up to €1,500/year (or €8,500 if >50 years)."
+            },
+            "specialCases": {
+                "title": "Special Cases",
+                "geoTitle": "Geographic Mobility",
+                "geoDesc": "If you moved for work, you may be entitled to additional 20% reduction in net income.",
+                "teleworkTitle": "Mixed Teleworking (Spain + Gibraltar)",
+                "teleworkDesc": "Complex situation. Taxation depends on where work is effectively performed. Consult a specialized tax advisor.",
+                "residencyTitle": "Fiscal Residence Change",
+                "residencyDesc": "If you changed residence during the year, you may need to file proportional returns or even two returns (Spain and Gibraltar)."
+            },
+            "regions": {
+                "title": "Differences by Autonomous Community",
+                "desc": "Each autonomous community has its own IRPF scales and additional deductions:",
+                "list": [
+                    "<strong>Andalusia:</strong> Deductions for birth/adoption, large family, disability",
+                    "<strong>Madrid:</strong> Lower scales, deductions for primary residence rent",
+                    "<strong>Catalonia:</strong> Deductions for rent, home rehabilitation",
+                    "<strong>Valencia:</strong> Deductions for birth, disability, dependents"
+                ],
+                "note": "Check specific deductions for your community on your regional tax website."
+            },
+            "errors": {
+                "title": "Common Errors to Avoid",
+                "e1": "<strong>Not declaring Gibraltar income:</strong> Mandatory. AEAT can detect it and fine you.",
+                "e2": "<strong>Forgetting double taxation deduction:</strong> You would be overpaying. Always request certificate in Gibraltar.",
+                "e3": "<strong>Using incorrect exchange rate:</strong> Must be official annual average rate (published by Bank of Spain).",
+                "e4": "<strong>Not keeping proofs:</strong> Keep all documents at least 4 years in case Tax Agency requires check."
+            },
+            "resources": {
+                "title": "Official Resources",
+                "items": [
+                    "<strong>Tax Agency (AEAT):</strong> www.agenciatributaria.es",
+                    "<strong>Info Phone:</strong> 91 535 73 26 / 901 33 55 33",
+                    "<strong>Appointment:</strong> Via AEAT website or app",
+                    "<strong>Renta WEB:</strong> Online filing access (April-June)",
+                    "<strong>IRPF Calculator:</strong> Available on AEAT website"
+                ]
+            }
+        }
+    },
+    "Dashboard": {
+        "nav": {
+            "dashboard": "Dashboard",
+            "calculators": "Calculators",
+            "history": "History",
+            "compare": "Compare",
+            "reminders": "Reminders",
+            "subscription": "Subscription",
+            "home": "Home",
+            "logout": "Log Out"
+        },
+        "header": {
+            "loading": "Loading..."
+        }
+    },
+    "Footer": {
+        "copyright": "© 2024 BiTax - Spain-Gibraltar Tax Management",
+        "developedFor": "Developed to help cross-border workers"
+    },
+    "Legal": {
+        "title": "Important Legal Notice",
+        "text": "This tool uses estimated calculations based on current regulations in Spain and Gibraltar. Since tax laws change frequently and every personal situation is unique, the results provided may not be exact or applicable to your specific case. This platform is for informational and educational purposes and does not substitute professional advice. We strongly recommend consulting with a tax advisor depending on international taxation before taking any decision related to your tax obligations. BiTax is not responsible for decisions taken based on the information provided by this tool."
+    }
+}

@@ -5,10 +5,12 @@ import { SpainData, SpainResult } from '@/types'
 import { calculateSpainTax } from '@/lib/spainCalculations'
 import { formatNumber, parseFormattedNumber } from '@/lib/numberFormat'
 import { Calculator, FileText, AlertCircle, MapPin } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 type IncomeSource = 'gibraltar' | 'spain' | 'both'
 
 export default function SpainCalculator() {
+  const t = useTranslations('Calculator')
   const [incomeSource, setIncomeSource] = useState<IncomeSource | null>(null)
 
   const [data, setData] = useState<SpainData>({
@@ -66,11 +68,11 @@ export default function SpainCalculator() {
           <div className="bg-blue-600 p-3 rounded-lg">
             <FileText className="h-6 w-6 text-white" />
           </div>
-          <h2 className="text-3xl font-bold text-gray-900">Calculadora España (IRPF)</h2>
+          <h2 className="text-3xl font-bold text-gray-900">{t('Spain.title')}</h2>
         </div>
 
         <p className="text-gray-600 mb-6">
-          Calcula tu declaración de la renta en España. Versión simplificada para cálculo rápido.
+          {t('Spain.description')}
         </p>
 
         {/* Alerta de limitaciones versión gratis */}
@@ -79,28 +81,16 @@ export default function SpainCalculator() {
             <AlertCircle className="h-5 w-5 text-amber-500 flex-shrink-0 mt-0.5" />
             <div className="ml-3">
               <h4 className="text-sm font-semibold text-amber-800 mb-1">
-                Calculadora Básica - Limitaciones
+                {t('Spain.freeLimitTitle')}
               </h4>
-              <p className="text-sm text-amber-700 mb-2">
-                Esta versión <strong>gratuita</strong> calcula el IRPF para el caso más simple:
-                <strong> persona soltera sin hijos ni deducciones adicionales</strong>.
-              </p>
-              <p className="text-sm text-amber-700 mb-2">
-                <strong>NO incluye:</strong>
-              </p>
+              <p className="text-sm text-amber-700 mb-2" dangerouslySetInnerHTML={{ __html: t.raw('Spain.freeLimitDesc1') }} />
+              <p className="text-sm text-amber-700 mb-2" dangerouslySetInnerHTML={{ __html: t.raw('Spain.freeLimitDesc2') }} />
               <ul className="text-sm text-amber-700 list-disc list-inside ml-2 space-y-1">
-                <li>Deducciones por hijos y descendientes</li>
-                <li>Mínimos familiares (cónyuge, ascendientes)</li>
-                <li>Deducciones por vivienda habitual</li>
-                <li>Deducciones por maternidad/paternidad</li>
-                <li>Deducciones autonómicas específicas</li>
-                <li>Tributación individual/conjunta en matrimonio</li>
-                <li>Guardar cálculos ilimitados</li>
+                {(t.raw('Spain.freeLimitList') as string[]).map((item, idx) => (
+                  <li key={idx}>{item}</li>
+                ))}
               </ul>
-              <p className="text-sm text-amber-700 mt-3">
-                💎 <strong>¿Tienes hijos o situación familiar compleja?</strong> Usa la versión <strong>Premium</strong> para
-                un cálculo preciso con todas las deducciones oficiales.
-              </p>
+              <p className="text-sm text-amber-700 mt-3" dangerouslySetInnerHTML={{ __html: t.raw('Spain.premiumPromo') }} />
             </div>
           </div>
         </div>
@@ -109,7 +99,7 @@ export default function SpainCalculator() {
         {!incomeSource && (
           <div className="space-y-4">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">
-              ¿De dónde has obtenido tus ingresos en el año fiscal?
+              {t('Spain.incomeSourceTitle')}
             </h3>
 
             <div className="grid md:grid-cols-3 gap-4">
@@ -122,10 +112,10 @@ export default function SpainCalculator() {
                   <div className="bg-red-100 p-2 rounded-lg group-hover:bg-red-200">
                     <MapPin className="h-6 w-6 text-red-600" />
                   </div>
-                  <h4 className="font-bold text-gray-900">Solo Gibraltar</h4>
+                  <h4 className="font-bold text-gray-900">{t('Spain.sources.gibraltar')}</h4>
                 </div>
                 <p className="text-sm text-gray-600">
-                  He trabajado únicamente en Gibraltar
+                  {t('Spain.sources.gibraltarDesc')}
                 </p>
               </button>
 
@@ -138,10 +128,10 @@ export default function SpainCalculator() {
                   <div className="bg-blue-100 p-2 rounded-lg group-hover:bg-blue-200">
                     <MapPin className="h-6 w-6 text-blue-600" />
                   </div>
-                  <h4 className="font-bold text-gray-900">Solo España</h4>
+                  <h4 className="font-bold text-gray-900">{t('Spain.sources.spain')}</h4>
                 </div>
                 <p className="text-sm text-gray-600">
-                  He trabajado únicamente en España
+                  {t('Spain.sources.spainDesc')}
                 </p>
               </button>
 
@@ -154,10 +144,10 @@ export default function SpainCalculator() {
                   <div className="bg-purple-100 p-2 rounded-lg group-hover:bg-purple-200">
                     <MapPin className="h-6 w-6 text-purple-600" />
                   </div>
-                  <h4 className="font-bold text-gray-900">Ambos Países</h4>
+                  <h4 className="font-bold text-gray-900">{t('Spain.sources.both')}</h4>
                 </div>
                 <p className="text-sm text-gray-600">
-                  He trabajado en Gibraltar y España
+                  {t('Spain.sources.bothDesc')}
                 </p>
               </button>
             </div>
@@ -170,15 +160,14 @@ export default function SpainCalculator() {
             {/* Botón para cambiar selección */}
             <div className="bg-gray-50 p-4 rounded-lg flex items-center justify-between">
               <div className="flex items-center space-x-3">
-                <MapPin className={`h-5 w-5 ${
-                  incomeSource === 'gibraltar' ? 'text-red-600' :
+                <MapPin className={`h-5 w-5 ${incomeSource === 'gibraltar' ? 'text-red-600' :
                   incomeSource === 'spain' ? 'text-blue-600' :
-                  'text-purple-600'
-                }`} />
+                    'text-purple-600'
+                  }`} />
                 <span className="font-semibold text-gray-900">
-                  {incomeSource === 'gibraltar' && 'Ingresos solo de Gibraltar'}
-                  {incomeSource === 'spain' && 'Ingresos solo de España'}
-                  {incomeSource === 'both' && 'Ingresos de ambos países'}
+                  {incomeSource === 'gibraltar' && t('Spain.currentSource.gibraltar')}
+                  {incomeSource === 'spain' && t('Spain.currentSource.spain')}
+                  {incomeSource === 'both' && t('Spain.currentSource.both')}
                 </span>
               </div>
               <button
@@ -188,7 +177,7 @@ export default function SpainCalculator() {
                 }}
                 className="text-sm text-blue-600 hover:text-blue-800 font-semibold"
               >
-                Cambiar
+                {t('Spain.changeSource')}
               </button>
             </div>
 
@@ -198,10 +187,7 @@ export default function SpainCalculator() {
                 <div className="flex">
                   <AlertCircle className="h-5 w-5 text-yellow-400 flex-shrink-0 mt-0.5" />
                   <div className="ml-3">
-                    <p className="text-sm text-yellow-700">
-                      <strong>Convenio de doble imposición:</strong> Los impuestos pagados en Gibraltar
-                      se descuentan de tu declaración española para evitar doble tributación.
-                    </p>
+                    <p className="text-sm text-yellow-700" dangerouslySetInnerHTML={{ __html: t.raw('Spain.dtaWarning') }} />
                   </div>
                 </div>
               </div>
@@ -213,7 +199,7 @@ export default function SpainCalculator() {
               {(incomeSource === 'spain' || incomeSource === 'both') && (
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Ingresos anuales en España (€) *
+                    {t('Spain.inputs.incomeSpain')}
                   </label>
                   <input
                     type="text"
@@ -232,7 +218,7 @@ export default function SpainCalculator() {
                 <>
                   <div>
                     <label className="block text-sm font-semibold text-gray-700 mb-2">
-                      Ingresos anuales en Gibraltar (€) *
+                      {t('Spain.inputs.incomeGibraltar')}
                     </label>
                     <input
                       type="text"
@@ -244,14 +230,14 @@ export default function SpainCalculator() {
                       placeholder="Ej: 35.000"
                     />
                     <p className="text-xs text-gray-500 mt-1">
-                      Convertir libras a euros al tipo de cambio medio anual
+                      {t('Spain.inputs.convertTip')}
                     </p>
                   </div>
 
                   {/* Seguridad Social Gibraltar */}
                   <div>
                     <label className="block text-sm font-semibold text-gray-700 mb-2">
-                      Cotizaciones Seguridad Social Gibraltar (€)
+                      {t('Spain.inputs.socialSecurityGib')}
                     </label>
                     <input
                       type="text"
@@ -263,14 +249,14 @@ export default function SpainCalculator() {
                       placeholder="Ej: 2.500"
                     />
                     <p className="text-xs text-gray-500 mt-1">
-                      Cotizaciones pagadas a la Seguridad Social en Gibraltar
+                      {t('Spain.inputs.socialSecurityGibDesc')}
                     </p>
                   </div>
 
                   {/* Impuesto pagado en Gibraltar */}
                   <div>
                     <label className="block text-sm font-semibold text-gray-700 mb-2">
-                      Impuesto pagado en Gibraltar (€) *
+                      {t('Spain.inputs.taxPaidGib')}
                     </label>
                     <input
                       type="text"
@@ -282,8 +268,7 @@ export default function SpainCalculator() {
                       placeholder="Ej: 4.200"
                     />
                     <p className="text-xs text-gray-500 mt-1">
-                      Introduce el impuesto (Income Tax) que pagaste en Gibraltar según tu certificado fiscal.
-                      Nota: El año fiscal de Gibraltar es del 1 de julio al 30 de junio.
+                      {t('Spain.inputs.taxPaidGibDesc')}
                     </p>
                   </div>
                 </>
@@ -292,7 +277,7 @@ export default function SpainCalculator() {
               {/* Comunidad Autónoma */}
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Comunidad Autónoma de residencia *
+                  {t('Spain.inputs.autonomousCommunity')}
                 </label>
                 <select
                   value={data.autonomousCommunity}
@@ -323,7 +308,7 @@ export default function SpainCalculator() {
               {(incomeSource === 'spain' || incomeSource === 'both') && (
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Cotizaciones a la Seguridad Social (€)
+                    {t('Spain.inputs.socialSecurity')}
                   </label>
                   <input
                     type="text"
@@ -335,7 +320,7 @@ export default function SpainCalculator() {
                     placeholder="Ej: 3.000"
                   />
                   <p className="text-xs text-gray-500 mt-1">
-                    Cotizaciones deducibles de tu base imponible
+                    {t('Spain.inputs.socialSecurityDesc')}
                   </p>
                 </div>
               )}
@@ -344,7 +329,7 @@ export default function SpainCalculator() {
               {(incomeSource === 'spain' || incomeSource === 'both') && (
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Retenciones practicadas (€)
+                    {t('Spain.inputs.retentions')}
                   </label>
                   <input
                     type="text"
@@ -356,7 +341,7 @@ export default function SpainCalculator() {
                     placeholder="Ej: 5.000"
                   />
                   <p className="text-xs text-gray-500 mt-1">
-                    IRPF retenido en tus nóminas españolas
+                    {t('Spain.inputs.retentionsDesc')}
                   </p>
                 </div>
               )}
@@ -372,7 +357,7 @@ export default function SpainCalculator() {
               }
               className="w-full bg-blue-600 text-white py-4 rounded-lg hover:bg-blue-700 transition-colors font-semibold text-lg shadow-md hover:shadow-lg disabled:bg-gray-400 disabled:cursor-not-allowed"
             >
-              Calcular Declaración IRPF
+              {t('Spain.inputs.calculate')}
             </button>
           </div>
         )}
@@ -381,87 +366,86 @@ export default function SpainCalculator() {
         {result && (
           <div className="mt-8 space-y-6">
             <div className="border-t pt-6">
-              <h3 className="text-2xl font-bold text-gray-900 mb-6">Resultado de tu Declaración</h3>
+              <h3 className="text-2xl font-bold text-gray-900 mb-6">{t('Spain.results.title')}</h3>
 
               {/* Resultado final destacado */}
-              <div className={`p-6 rounded-xl mb-6 ${
-                result.finalTax > 0
-                  ? 'bg-red-50 border-2 border-red-500'
-                  : 'bg-green-50 border-2 border-green-500'
-              }`}>
+              <div className={`p-6 rounded-xl mb-6 ${result.finalTax > 0
+                ? 'bg-red-50 border-2 border-red-500'
+                : 'bg-green-50 border-2 border-green-500'
+                }`}>
                 <h4 className="text-xl font-bold mb-2">
-                  {result.finalTax > 0 ? 'A pagar' : 'A devolver'}
+                  {result.finalTax > 0 ? t('Spain.results.toPay') : t('Spain.results.toReturn')}
                 </h4>
                 <p className="text-4xl font-bold">
                   {result.finalTax > 0 ? '+' : ''}{result.finalTax.toLocaleString()}€
                 </p>
                 <p className="text-sm text-gray-600 mt-2">
-                  Resultado final de la declaración (diferencia entre impuesto total y retenciones)
+                  {t('Spain.results.finalDesc')}
                 </p>
               </div>
 
               {/* Desglose detallado */}
               <div className="bg-gray-50 p-6 rounded-xl space-y-4">
-                <h4 className="text-lg font-bold mb-4">Desglose detallado</h4>
+                <h4 className="text-lg font-bold mb-4">{t('Spain.results.breakdown')}</h4>
 
                 <div className="grid md:grid-cols-2 gap-4">
                   <div className="bg-white p-4 rounded-lg">
-                    <p className="text-sm text-gray-600">Ingresos brutos totales</p>
+                    <p className="text-sm text-gray-600">{t('Spain.results.grossIncome')}</p>
                     <p className="text-2xl font-bold">{result.grossIncome.toLocaleString()}€</p>
                     <p className="text-xs text-gray-500 mt-1">
-                      España: {data.incomeSpain.toLocaleString()}€ + Gibraltar: {data.incomeGibraltar.toLocaleString()}€
+                      {t('Spain.results.grossIncomeDesc', { spain: data.incomeSpain.toLocaleString(), gibraltar: data.incomeGibraltar.toLocaleString() })}
                     </p>
                   </div>
 
                   <div className="bg-white p-4 rounded-lg">
-                    <p className="text-sm text-gray-600">Base liquidable general</p>
+                    <p className="text-sm text-gray-600">{t('Spain.results.generalBase')}</p>
                     <p className="text-2xl font-bold">{result.generalBase.toLocaleString()}€</p>
                   </div>
 
                   <div className="bg-white p-4 rounded-lg">
-                    <p className="text-sm text-gray-600">Cuota estatal</p>
+                    <p className="text-sm text-gray-600">{t('Spain.results.stateTax')}</p>
                     <p className="text-xl font-semibold text-blue-600">{result.stateTax.toLocaleString()}€</p>
                   </div>
 
                   <div className="bg-white p-4 rounded-lg">
-                    <p className="text-sm text-gray-600">Cuota autonómica</p>
+                    <p className="text-sm text-gray-600">{t('Spain.results.regionalTax')}</p>
                     <p className="text-xl font-semibold text-blue-600">{result.regionalTax.toLocaleString()}€</p>
                   </div>
 
                   <div className="bg-white p-4 rounded-lg">
-                    <p className="text-sm text-gray-600">Impuesto total</p>
+                    <p className="text-sm text-gray-600">{t('Spain.results.totalTax')}</p>
                     <p className="text-xl font-semibold">{result.totalTax.toLocaleString()}€</p>
                   </div>
 
                   <div className="bg-white p-4 rounded-lg">
-                    <p className="text-sm text-gray-600">Tasa efectiva</p>
+                    <p className="text-sm text-gray-600">{t('Spain.results.effectiveRate')}</p>
                     <p className="text-xl font-semibold">{result.effectiveRate}%</p>
                   </div>
 
                   {result.doubleTaxationRelief > 0 && (
                     <div className="bg-green-100 p-4 rounded-lg border border-green-300">
-                      <p className="text-sm text-green-700 font-semibold">Crédito por doble imposición</p>
+                      <p className="text-sm text-green-700 font-semibold">{t('Spain.results.dtrTitle')}</p>
                       <p className="text-xl font-bold text-green-700">-{result.doubleTaxationRelief.toLocaleString()}€</p>
                       <p className="text-xs text-green-600 mt-1">
-                        Por impuestos pagados en Gibraltar
+                        {t('Spain.results.dtrDesc')}
                       </p>
                     </div>
                   )}
 
                   {result.deductions > 0 && (
                     <div className="bg-blue-100 p-4 rounded-lg border border-blue-300">
-                      <p className="text-sm text-blue-700 font-semibold">Deducciones aplicadas</p>
+                      <p className="text-sm text-blue-700 font-semibold">{t('Spain.results.deductions')}</p>
                       <p className="text-xl font-bold text-blue-700">-{result.deductions.toLocaleString()}€</p>
                     </div>
                   )}
 
                   <div className="bg-gray-200 p-4 rounded-lg">
-                    <p className="text-sm text-gray-600">Retenciones practicadas</p>
+                    <p className="text-sm text-gray-600">{t('Spain.results.retentions')}</p>
                     <p className="text-xl font-semibold">-{data.retentions.toLocaleString()}€</p>
                   </div>
 
                   <div className="bg-white p-4 rounded-lg">
-                    <p className="text-sm text-gray-600">Ingreso neto estimado</p>
+                    <p className="text-sm text-gray-600">{t('Spain.results.netIncome')}</p>
                     <p className="text-2xl font-bold text-green-600">{result.netIncome.toLocaleString()}€</p>
                   </div>
                 </div>
@@ -470,11 +454,7 @@ export default function SpainCalculator() {
               {/* Explicación convenio */}
               {result.doubleTaxationRelief > 0 && (
                 <div className="bg-blue-50 border-l-4 border-blue-400 p-4 mt-6">
-                  <p className="text-sm text-blue-700">
-                    <strong>Convenio de doble imposición:</strong> Se ha aplicado un crédito de{' '}
-                    {result.doubleTaxationRelief.toLocaleString()}€ correspondiente a los impuestos pagados en Gibraltar.
-                    Esto evita que pagues impuestos dos veces sobre los mismos ingresos.
-                  </p>
+                  <p className="text-sm text-blue-700" dangerouslySetInnerHTML={{ __html: (t.raw('Spain.results.dtrExplanation') as string).replace('{amount}', result.doubleTaxationRelief.toLocaleString()) }} />
                 </div>
               )}
             </div>
